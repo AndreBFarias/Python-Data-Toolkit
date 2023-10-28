@@ -14,15 +14,16 @@ from ui.profiler_tab import ProfilerTab
 from ui.comparer_tab import ComparerTab
 from ui.visualizer_tab import VisualizerTab
 from ui.etl_preparer_tab import ETLPreparerTab
-from ui.dbt_assistant_tab import DBTAssistantTab # Nova Guilda
+from ui.dbt_assistant_tab import DBTAssistantTab
 
 class DataToolkitApp(tk.Tk):
     def __init__(self):
-        super().__init__()
+        # CORREÇÃO: Definir um nome de classe único para a janela (WM_CLASS)
+        super().__init__(className='Data-Toolkit')
 
         # --- CONFIGURAÇÕES GERAIS DA JANELA ---
         self.title("Data Toolkit")
-        self.geometry("1200x900") # Aumentado para a nova aba
+        self.geometry("1200x900")
         self.minsize(1000, 700)
 
         # Paleta de Cores
@@ -77,7 +78,6 @@ class DataToolkitApp(tk.Tk):
         self.notebook = ttk.Notebook(main_container, style='TNotebook')
         self.notebook.pack(fill=tk.BOTH, expand=True)
 
-        # Adiciona as abas
         self.add_tab(DBTAssistantTab, "Assistente dbt")
         self.add_tab(ETLPreparerTab, "Preparador ETL")
         self.add_tab(SegmenterTab, "Segmentador")
