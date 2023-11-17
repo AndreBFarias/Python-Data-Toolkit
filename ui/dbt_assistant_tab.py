@@ -1,123 +1,122 @@
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+# Arquivo: DBTAssistantTab.py
+
+import customtkinter as ctk
+from tkinter import filedialog, messagebox, Listbox
 import os
-import subprocess
 import threading
 import yaml
 import json
 from dotenv import load_dotenv
 import google.generativeai as genai
 from .base_tab import BaseTab
+from ui import theme
+from ui.custom_widgets import EntryWithContextMenu, TextboxWithContextMenu
 
 class DBTAssistantTab(BaseTab):
     def __init__(self, master, app_instance):
         super().__init__(master, app_instance)
         self.sql_files_map = {}
         self.create_widgets()
-
+        self.populate_initial_paths()
+        
     def create_widgets(self):
-        main_frame = ttk.Frame(self)
-        main_frame.pack(fill=tk.BOTH, expand=True)
-        main_frame.columnconfigure(1, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
 
-        # --- PAINEL DE CONTROLO (ESQUERDA) ---
-        controls_frame = ttk.Frame(main_frame, width=350)
-        controls_frame.grid(row=0, column=0, sticky='nsew', padx=(0, 20))
-
-        # 1. Configuração do Repositório
-        repo_frame = ttk.LabelFrame(controls_frame, text="Configuração do Repositório", padding=(15, 10))
-        repo_frame.pack(fill='x', pady=(0, 20))
+        # PAINEL DE CONTROLES (ESQUERDA)
+        controls_frame = ctk.CTkFrame(self, width=350, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
+        controls_frame.grid(row=0, column=0, sticky='nsw', padx=(0, theme.padding["widget_x"]), pady=0)
         
-        ttk.Label(repo_frame, text="Caminho do Projeto 'pipelines':").pack(anchor='w')
-        self.repo_path_var = tk.StringVar()
-        entry_repo = ttk.Entry(repo_frame, textvariable=self.repo_path_var, state='readonly')
-        entry_repo.pack(fill='x', expand=True, pady=(0,5))
-        ttk.Button(repo_frame, text="Selecionar Pasta do Projeto...", command=self.select_repo_path).pack(fill='x')
+        ctk.CTkLabel(controls_frame, text="Configuração do Repositório", font=theme.fonts["h1"]).pack(anchor='w', padx=15, pady=(15,10))
         
-        ttk.Label(repo_frame, text="Subpasta de Destino (models):").pack(anchor='w', pady=(10,0))
-        self.models_path_var = tk.StringVar()
-        self.models_combo = ttk.Combobox(repo_frame, textvariable=self.models_path_var, state='readonly')
-        self.models_combo.pack(fill='x', expand=True, pady=(0,5))
+        self.repo_path_var = ctk.StringVar()
+        ctk.CTkButton(controls_frame, text="Selecionar Pasta do Projeto dbt...", font=theme.fonts["button"], command=self.select_repo_path, fg_color=theme.colors["comment"]).pack(fill='x', padx=15, pady=5)
+        EntryWithContextMenu(controls_frame, textvariable=self.repo_path_var, state='readonly', fg_color=theme.colors["background"], border_color=theme.colors["comment"]).pack(fill='x', expand=True, padx=15, pady=(0,10))
+        
+        ctk.CTkLabel(controls_frame, text="Subpasta de Destino (models):", font=theme.fonts["body"]).pack(anchor='w', padx=15)
+        self.models_path_var = ctk.StringVar()
+        self.models_combo = ctk.CTkComboBox(controls_frame, variable=self.models_path_var, state='readonly', button_color=theme.colors["comment"], fg_color=theme.colors["background"], border_color=theme.colors["comment"])
+        self.models_combo.pack(fill='x', expand=True, padx=15, pady=(5,10))
 
-        ttk.Label(repo_frame, text="Ficheiro schema.yml Principal:").pack(anchor='w', pady=(10,0))
-        self.schema_path_var = tk.StringVar()
-        entry_schema = ttk.Entry(repo_frame, textvariable=self.schema_path_var, state='readonly')
-        entry_schema.pack(fill='x', expand=True, pady=(0,5))
-        ttk.Button(repo_frame, text="Selecionar schema.yml...", command=self.select_schema_path).pack(fill='x')
+        ctk.CTkLabel(controls_frame, text="Ficheiro schema.yml Principal:", font=theme.fonts["body"]).pack(anchor='w', padx=15)
+        self.schema_path_var = ctk.StringVar()
+        ctk.CTkButton(controls_frame, text="Selecionar schema.yml...", font=theme.fonts["button"], command=self.select_schema_path, fg_color=theme.colors["comment"]).pack(fill='x', padx=15, pady=5)
+        EntryWithContextMenu(controls_frame, textvariable=self.schema_path_var, state='readonly', fg_color=theme.colors["background"], border_color=theme.colors["comment"]).pack(fill='x', expand=True, padx=15, pady=(0,15))
 
-        # 2. Etapa 1: Criação da Branch
-        branch_frame = ttk.LabelFrame(controls_frame, text="Etapa 1: Comandos para Branch", padding=(15, 10))
-        branch_frame.pack(fill='x', pady=(0, 20))
-        ttk.Label(branch_frame, text="Nome da Feature:").pack(anchor='w')
-        self.feature_name_var = tk.StringVar()
+        ctk.CTkLabel(controls_frame, text="Etapa 1: Comandos para Branch", font=theme.fonts["h1"]).pack(anchor='w', padx=15, pady=(10,10))
+        ctk.CTkLabel(controls_frame, text="Nome da Feature:", font=theme.fonts["body"]).pack(anchor='w', padx=15)
+        self.feature_name_var = ctk.StringVar()
         self.feature_name_var.trace("w", self.update_git_commands)
-        ttk.Entry(branch_frame, textvariable=self.feature_name_var).pack(fill='x', pady=(0,10))
-        
-        self.git_commands_text = tk.Text(branch_frame, height=4, wrap='word', relief='flat', background=self.app.ALT_BG, foreground=self.app.FG_COLOR)
-        self.git_commands_text.pack(fill='x', expand=True)
+        EntryWithContextMenu(controls_frame, textvariable=self.feature_name_var, fg_color=theme.colors["background"], border_color=theme.colors["comment"]).pack(fill='x', padx=15, pady=(5,10))
+        self.git_commands_text = TextboxWithContextMenu(controls_frame, height=90, font=theme.fonts["code"], wrap='word', fg_color=theme.colors["background"], border_color=theme.colors["comment"], border_width=1)
+        self.git_commands_text.pack(fill='x', expand=True, padx=15, pady=(0,15))
 
-        # --- PAINEL PRINCIPAL (DIREITA) ---
-        main_panel_frame = ttk.Frame(main_frame)
-        main_panel_frame.grid(row=0, column=1, sticky='nsew')
+        # PAINEL PRINCIPAL (DIREITA)
+        main_panel_frame = ctk.CTkFrame(self, fg_color="transparent")
+        main_panel_frame.grid(row=0, column=1, sticky='nsew', padx=(theme.padding["widget_x"], 0), pady=0)
+        main_panel_frame.columnconfigure(0, weight=1)
+        main_panel_frame.rowconfigure(1, weight=1)
         
-        notebook = ttk.Notebook(main_panel_frame, style='TNotebook')
-        notebook.pack(fill='both', expand=True)
-        
-        prep_tab = ttk.Frame(notebook, padding=15)
-        notebook.add(prep_tab, text="Preparação e Versionamento")
-        prep_tab.columnconfigure(0, weight=1)
-        prep_tab.rowconfigure(1, weight=1)
+        sql_frame = ctk.CTkFrame(main_panel_frame, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
+        sql_frame.grid(row=0, column=0, sticky='ew')
+        ctk.CTkLabel(sql_frame, text="Etapa 2: Preparação das Consultas", font=theme.fonts["h1"]).pack(anchor='w', padx=15, pady=(15,10))
+        ctk.CTkButton(sql_frame, text="Selecionar Ficheiros SQL...", font=theme.fonts["button"], command=self.select_sql_files, fg_color=theme.colors["comment"]).pack(fill='x', padx=15, pady=(0,15))
 
-        # 3. Etapa 2: Preparação das Consultas
-        sql_frame = ttk.LabelFrame(prep_tab, text="Etapa 2: Preparação das Consultas", padding=(15, 10))
-        sql_frame.grid(row=0, column=0, sticky='ew', pady=(0, 20))
-        ttk.Button(sql_frame, text="Selecionar Ficheiros SQL...", command=self.select_sql_files).pack(fill='x')
-
-        # 4. Etapa 3: Edição e Documentação
-        edit_frame = ttk.LabelFrame(prep_tab, text="Etapa 3: Edição e Documentação com IA", padding=(15, 10))
-        edit_frame.grid(row=1, column=0, sticky='nsew')
-        edit_frame.rowconfigure(1, weight=1)
+        edit_frame = ctk.CTkFrame(main_panel_frame, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
+        edit_frame.grid(row=1, column=0, sticky='nsew', pady=15)
+        edit_frame.rowconfigure(2, weight=1)
         edit_frame.columnconfigure(0, weight=3)
         edit_frame.columnconfigure(1, weight=2)
         
-        self.sql_listbox = tk.Listbox(edit_frame, height=5, background=self.app.ALT_BG, foreground=self.app.FG_COLOR, relief='flat')
-        self.sql_listbox.grid(row=0, column=0, sticky='nsew', columnspan=2, pady=(0,10))
+        ctk.CTkLabel(edit_frame, text="Etapa 3: Edição e Documentação com IA", font=theme.fonts["h1"]).grid(row=0, column=0, columnspan=2, sticky='w', padx=15, pady=(15,10))
+        
+        self.sql_listbox = Listbox(edit_frame, height=5, background=theme.colors["background"], foreground=theme.colors["foreground"], selectbackground=theme.colors["accent"], relief='flat', borderwidth=0, highlightthickness=0, font=theme.fonts["body"])
+        self.sql_listbox.grid(row=1, column=0, sticky='nsew', columnspan=2, padx=15, pady=(0,10))
         self.sql_listbox.bind('<<ListboxSelect>>', self.on_sql_file_select)
+        
+        self.sql_editor_text = TextboxWithContextMenu(edit_frame, wrap="none", font=theme.fonts["code"], fg_color=theme.colors["background"], border_color=theme.colors["comment"], border_width=1)
+        self.sql_editor_text.grid(row=2, column=0, sticky='nsew', padx=(15,5), pady=(0,10))
+        self.yml_editor_text = TextboxWithContextMenu(edit_frame, wrap="none", font=theme.fonts["code"], fg_color=theme.colors["background"], border_color=theme.colors["comment"], border_width=1)
+        self.yml_editor_text.grid(row=2, column=1, sticky='nsew', padx=(5,15), pady=(0,10))
+        
+        self.btn_generate_doc = ctk.CTkButton(edit_frame, text="Gerar Documentação com IA", font=theme.fonts["button"], command=self.start_documentation_generation, state='disabled', fg_color=theme.colors["accent"], text_color="#000000", hover_color=theme.colors["pink"])
+        self.btn_generate_doc.grid(row=3, column=0, columnspan=2, sticky='ew', padx=15, pady=10)
+        
+        commit_frame = ctk.CTkFrame(main_panel_frame, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
+        commit_frame.grid(row=2, column=0, sticky='ew')
+        ctk.CTkLabel(commit_frame, text="Etapa 4: Versionar e Preparar Commit", font=theme.fonts["h1"]).pack(anchor='w', padx=15, pady=(15,10))
+        self.btn_version_files = ctk.CTkButton(commit_frame, text="Versionar Ficheiros", command=self.version_files, font=theme.fonts["button"], state='disabled', fg_color=theme.colors["green"], text_color="#000000", hover_color="#81F9A1")
+        self.btn_version_files.pack(fill='x', padx=15, pady=(0,10))
+        self.final_git_commands_text = TextboxWithContextMenu(commit_frame, height=60, font=theme.fonts["code"], wrap='word', fg_color=theme.colors["background"], border_color=theme.colors["comment"], border_width=1)
+        self.final_git_commands_text.pack(fill='x', expand=True, padx=15, pady=(0,15))
 
-        self.sql_editor_text = tk.Text(edit_frame, wrap="none", relief='flat', background=self.app.ALT_BG, foreground=self.app.FG_COLOR)
-        self.sql_editor_text.grid(row=1, column=0, sticky='nsew', padx=(0,10))
-        
-        self.yml_editor_text = tk.Text(edit_frame, wrap="none", relief='flat', background=self.app.ALT_BG, foreground=self.app.FG_COLOR)
-        self.yml_editor_text.grid(row=1, column=1, sticky='nsew')
-        
-        self.btn_generate_doc = ttk.Button(edit_frame, text="Gerar Documentação com IA", command=self.start_documentation_generation, state='disabled')
-        self.btn_generate_doc.grid(row=2, column=1, sticky='ew', pady=(10,0))
-        
-        # 5. Etapa 4: Consagração
-        commit_frame = ttk.LabelFrame(prep_tab, text="Etapa 4: Versionar e Preparar Commit", padding=(15, 10))
-        commit_frame.grid(row=2, column=0, sticky='ew', pady=(20,0))
-        self.btn_version_files = ttk.Button(commit_frame, text="Versionar Ficheiros", command=self.version_files, style="Accent.TButton", state='disabled')
-        self.btn_version_files.pack(fill='x', pady=(0,10))
-        self.final_git_commands_text = tk.Text(commit_frame, height=3, wrap='word', relief='flat', background=self.app.ALT_BG, foreground=self.app.FG_COLOR)
-        self.final_git_commands_text.pack(fill='x', expand=True)
-
-        # CORREÇÃO: Chamar update_git_commands DEPOIS que todos os widgets foram criados.
         self.update_git_commands()
 
+    # ... O resto dos métodos do ficheiro permanecem iguais ...
+
+
+    def populate_initial_paths(self):
+        dbt_path = self.app.config_manager.get("dbt_project_path")
+        if dbt_path and os.path.isdir(dbt_path):
+            self.repo_path_var.set(dbt_path)
+            self.scan_for_models_dirs()
+
     def select_repo_path(self):
-        repo_path = filedialog.askdirectory(title="Selecione a pasta raiz do projeto 'pipelines'")
+        initial_dir = self.app.config_manager.get("dbt_project_path") or os.path.expanduser("~")
+        repo_path = filedialog.askdirectory(title="Selecione a pasta raiz do projeto dbt", initialdir=initial_dir)
         if repo_path and os.path.basename(repo_path):
             self.repo_path_var.set(repo_path)
             self.app.log(f"Repositório selecionado: {repo_path}")
             self.scan_for_models_dirs()
+            self.app.config_manager.set("dbt_project_path", repo_path)
+            self.app.config_manager.save_config()
 
     def scan_for_models_dirs(self):
         repo_path = self.repo_path_var.get()
         if not repo_path: return
         models_dirs = [os.path.join(r, d) for r, ds, _ in os.walk(repo_path) for d in ds if d == 'models']
         relative_paths = [os.path.relpath(d, repo_path) for d in models_dirs]
-        self.models_combo['values'] = relative_paths
-        self.models_combo.config(state='readonly')
+        self.models_combo.configure(values=relative_paths, state='readonly')
         if relative_paths:
             self.models_combo.set(relative_paths[0])
             self.app.log(f"Subpastas 'models' encontradas: {len(relative_paths)}")
@@ -137,20 +136,21 @@ class DBTAssistantTab(BaseTab):
         feature_name = self.feature_name_var.get()
         branch_name = f"feature/{feature_name}" if feature_name else "feature/<nome_da_branch>"
         commands = f"git checkout develop\ngit pull\ngit checkout -b {branch_name}"
-        self.git_commands_text.delete('1.0', tk.END)
+        self.git_commands_text.delete('1.0', ctk.END)
         self.git_commands_text.insert('1.0', commands)
 
         final_commands = f"git add .\ngit commit -m \"feat(painel): adiciona modelo para {feature_name}\""
-        self.final_git_commands_text.delete('1.0', tk.END)
+        self.final_git_commands_text.delete('1.0', ctk.END)
         self.final_git_commands_text.insert('1.0', final_commands)
 
     def select_sql_files(self):
-        files = filedialog.askopenfilenames(title="Selecione as suas consultas SQL", filetypes=[("SQL files", "*.sql")])
+        initial_dir = self.app.config_manager.get("default_import_path") or os.path.expanduser("~")
+        files = filedialog.askopenfilenames(title="Selecione as suas consultas SQL", filetypes=[("SQL files", "*.sql")], initialdir=initial_dir)
         if files:
-            self.sql_listbox.delete(0, tk.END)
+            self.sql_listbox.delete(0, ctk.END)
             self.sql_files_map = {os.path.basename(f): f for f in files}
             for basename in self.sql_files_map.keys():
-                self.sql_listbox.insert(tk.END, basename)
+                self.sql_listbox.insert(ctk.END, basename)
             self.app.log(f"{len(files)} ficheiros SQL selecionados.")
 
     def on_sql_file_select(self, event):
@@ -164,29 +164,32 @@ class DBTAssistantTab(BaseTab):
             try:
                 with open(filepath, 'r', encoding='utf-8') as f:
                     content = f.read()
-                self.sql_editor_text.delete('1.0', tk.END)
+                self.sql_editor_text.delete('1.0', ctk.END)
                 self.sql_editor_text.insert('1.0', content)
-                self.btn_generate_doc.config(state='normal')
+                self.btn_generate_doc.configure(state='normal')
             except Exception as e:
                 messagebox.showerror("Erro", f"Não foi possível ler o ficheiro:\n{e}")
 
     def start_documentation_generation(self):
-        self.btn_generate_doc.config(state='disabled')
+        self.btn_generate_doc.configure(state='disabled')
         threading.Thread(target=self.generate_documentation).start()
 
     def generate_documentation(self):
         self.app.log("Invocando IA para gerar documentação...")
-        sql_query = self.sql_editor_text.get('1.0', tk.END)
+        sql_query = self.sql_editor_text.get('1.0', ctk.END)
         if not sql_query.strip():
             messagebox.showwarning("Aviso", "O editor de SQL está vazio.")
-            self.btn_generate_doc.config(state='normal')
+            self.btn_generate_doc.configure(state='normal')
             return
 
         try:
-            load_dotenv()
-            api_key = os.getenv("GEMINI_API_KEY")
+            api_key = self.app.config_manager.get("gemini_api_key")
             if not api_key:
-                messagebox.showerror("Erro", "Chave de API do Gemini não encontrada no ficheiro .env")
+                load_dotenv()
+                api_key = os.getenv("GEMINI_API_KEY")
+
+            if not api_key:
+                messagebox.showerror("Erro", "Chave de API do Gemini não encontrada. Por favor, configure-a na aba 'Configurações'.")
                 return
 
             genai.configure(api_key=api_key)
@@ -199,15 +202,15 @@ class DBTAssistantTab(BaseTab):
             doc_data = json.loads(response_text)
             
             yml_snippet = self.format_as_yml(doc_data)
-            self.yml_editor_text.delete('1.0', tk.END)
+            self.yml_editor_text.delete('1.0', ctk.END)
             self.yml_editor_text.insert('1.0', yml_snippet)
             self.app.log("Documentação gerada com sucesso.")
-            self.btn_version_files.config(state='normal')
+            self.btn_version_files.configure(state='normal')
         except Exception as e:
             messagebox.showerror("Erro na Geração", f"Ocorreu um erro ao comunicar com a IA:\n{e}")
             self.app.log(f"ERRO na geração de documentação: {e}")
         finally:
-            self.btn_generate_doc.config(state='normal')
+            self.btn_generate_doc.configure(state='normal')
 
     def build_prompt(self, sql_query):
         return f"""
@@ -248,38 +251,33 @@ class DBTAssistantTab(BaseTab):
         self.app.log("Iniciando processo de versionamento...")
         models_path = os.path.join(self.repo_path_var.get(), self.models_path_var.get())
         schema_path = self.schema_path_var.get()
-        yml_content_to_append = self.yml_editor_text.get('1.0', tk.END)
+        yml_content_to_append = self.yml_editor_text.get('1.0', ctk.END)
 
         if not all([self.repo_path_var.get(), self.models_path_var.get(), schema_path, self.sql_files_map, yml_content_to_append.strip()]):
             messagebox.showerror("Erro", "Verifique se todas as configurações, ficheiros SQL e documentação estão preenchidos.")
             return
 
         try:
-            # 1. Copiar e renomear ficheiros SQL
             for basename, original_path in self.sql_files_map.items():
                 new_name = f"painel_{basename}"
                 dest_path = os.path.join(models_path, new_name)
                 
-                # Usar o conteúdo do editor, que pode ter sido modificado
-                content = self.sql_editor_text.get('1.0', tk.END)
+                content = self.sql_editor_text.get('1.0', ctk.END)
 
                 with open(dest_path, 'w', encoding='utf-8') as f_write:
                     f_write.write(content)
                 self.app.log(f"Ficheiro salvo em {dest_path}")
             
-            # 2. Anexar ao schema.yml
             with open(schema_path, 'r', encoding='utf-8') as f:
                 schema_data = yaml.safe_load(f) or {}
             
-            # Garante que a estrutura base do YML existe
             if 'version' not in schema_data: schema_data['version'] = 2
             if 'models' not in schema_data: schema_data['models'] = []
 
-            # Carrega o trecho gerado como um objeto Python
             new_model_data_list = yaml.safe_load(yml_content_to_append)
             
-            # Adiciona os novos modelos à lista existente
-            schema_data['models'].extend(new_model_data_list)
+            if new_model_data_list:
+                schema_data['models'].extend(new_model_data_list)
 
             with open(schema_path, 'w', encoding='utf-8') as f:
                 yaml.dump(schema_data, f, allow_unicode=True, sort_keys=False, indent=2)
@@ -290,5 +288,3 @@ class DBTAssistantTab(BaseTab):
         except Exception as e:
             messagebox.showerror("Erro no Versionamento", f"Ocorreu um erro: {e}")
             self.app.log(f"ERRO no versionamento: {e}")
-
-
