@@ -140,7 +140,7 @@ class VisualizerTab(BaseTab):
             plt.tight_layout()
             
             self.canvas = FigureCanvasTkAgg(self.fig, master=self.canvas_frame)
-            self.canvas.get_tk_widget().configure(bg=theme.colors["background"]) # Cor de fundo do canvas
+            self.canvas.get_tk_widget().configure(bg=theme.colors["background"])
             self.canvas.draw()
             self.canvas.get_tk_widget().pack(fill='both', expand=True)
             self.btn_save.configure(state='normal')

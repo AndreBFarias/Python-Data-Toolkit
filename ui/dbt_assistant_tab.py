@@ -1,5 +1,3 @@
-# Arquivo: DBTAssistantTab.py
-
 import customtkinter as ctk
 from tkinter import filedialog, messagebox, Listbox
 import os
@@ -91,9 +89,6 @@ class DBTAssistantTab(BaseTab):
         self.final_git_commands_text.pack(fill='x', expand=True, padx=15, pady=(0,15))
 
         self.update_git_commands()
-
-    # ... O resto dos métodos do ficheiro permanecem iguais ...
-
 
     def populate_initial_paths(self):
         dbt_path = self.app.config_manager.get("dbt_project_path")
