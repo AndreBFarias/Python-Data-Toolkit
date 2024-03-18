@@ -47,7 +47,7 @@ class CleanerTab(BaseTab):
         ctk.CTkCheckBox(general_ops_frame, text="Remover colunas vazias", variable=self.remove_empty_cols_var, font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w', padx=20, pady=5)
         
         self.sanitize_headers_var = ctk.BooleanVar()
-        ctk.CTkCheckBox(general_ops_frame, text="Sanear nomes das colunas (substituir espaços por '_')", variable=self.sanitize_headers_var, font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w', padx=20, pady=5)
+        ctk.CTkCheckBox(general_ops_frame, text="Trocar os espaços por '_', nas colunas)", variable=self.sanitize_headers_var, font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w', padx=20, pady=5)
 
         specific_ops_frame = ctk.CTkFrame(ops_frame, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
         specific_ops_frame.grid(row=0, column=1, sticky='nsew', padx=(10, 0))
