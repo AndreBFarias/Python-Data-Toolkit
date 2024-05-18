@@ -22,8 +22,10 @@ class CleanerTab(BaseTab):
         file_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=(0, 15))
         file_frame.columnconfigure(1, weight=1)
 
+#4
         self.btn_select_file = ctk.CTkButton(file_frame, text="Selecionar Arquivo para Limpeza...", font=theme.fonts["button"], command=self.handle_file_selection, fg_color=theme.colors["comment"])
         self.btn_select_file.grid(row=0, column=0, padx=15, pady=15)
+#4
         self.lbl_filepath = ctk.CTkLabel(file_frame, text="Nenhum arquivo selecionado.", font=theme.fonts["body"], text_color=theme.colors["comment"])
         self.lbl_filepath.grid(row=0, column=1, padx=15, pady=15, sticky="w")
 
@@ -141,6 +143,7 @@ class CleanerTab(BaseTab):
 
     def processar(self):
         if self.df is None:
+#4
             messagebox.showwarning("Aviso", "Carregue um arquivo primeiro.")
             return
         

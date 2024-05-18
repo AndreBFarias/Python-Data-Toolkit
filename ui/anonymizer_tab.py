@@ -23,13 +23,16 @@ class AnonymizerTab(BaseTab):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
 
-        # --- SEÇÃO: FICHEIRO DE ORIGEM ---
+#4
+        # --- SEÇÃO: ARQUIVO DE ORIGEM ---
         file_frame = ctk.CTkFrame(self, fg_color=theme.colors["sidebar"])
         file_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=(0, 15))
         file_frame.columnconfigure(1, weight=1)
         
+#4
         self.btn_select_file = ctk.CTkButton(file_frame, text="Selecionar Arquivo...", font=theme.fonts["button"], command=self.handle_file_selection, fg_color=theme.colors["comment"])
         self.btn_select_file.grid(row=0, column=0, padx=15, pady=15)
+#4
         self.lbl_filepath = ctk.CTkLabel(file_frame, text="Nenhum arquivo selecionado.", font=theme.fonts["body"], text_color=theme.colors["comment"])
         self.lbl_filepath.grid(row=0, column=1, padx=15, pady=15, sticky="w")
 
@@ -140,7 +143,8 @@ class AnonymizerTab(BaseTab):
 
     def processar(self):
         if not self.anonymization_map or self.df is None:
-            messagebox.showerror("Erro", "Configure a fila de anonimização e carregue um ficheiro primeiro.")
+#4
+            messagebox.showerror("Erro", "Configure a fila de anonimização e carregue um arquivo primeiro.")
             return
         df_copy = self.df.copy()
         try:

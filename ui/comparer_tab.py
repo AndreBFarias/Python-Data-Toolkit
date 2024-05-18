@@ -25,15 +25,19 @@ class ComparerTab(BaseTab):
 
         file1_frame = ctk.CTkFrame(top_files_frame, fg_color=theme.colors["sidebar"])
         file1_frame.grid(row=0, column=0, sticky='nsew', padx=(0, 7))
-        self.btn_select_file1 = ctk.CTkButton(file1_frame, text="Selecionar Ficheiro Antigo (Base)...", font=theme.fonts["button"], command=self.handle_file1_selection, fg_color=theme.colors["comment"])
+#4
+        self.btn_select_file1 = ctk.CTkButton(file1_frame, text="Selecionar Arquivo Antigo (Base)...", font=theme.fonts["button"], command=self.handle_file1_selection, fg_color=theme.colors["comment"])
         self.btn_select_file1.pack(padx=15, pady=15, fill='x')
+#4
         self.lbl_filepath1 = ctk.CTkLabel(file1_frame, text="Nenhum arquivo.", font=theme.fonts["body"], text_color=theme.colors["comment"])
         self.lbl_filepath1.pack(padx=15, pady=(0, 15), anchor='w')
 
         file2_frame = ctk.CTkFrame(top_files_frame, fg_color=theme.colors["sidebar"])
         file2_frame.grid(row=0, column=1, sticky='nsew', padx=(7, 0))
-        self.btn_select_file2 = ctk.CTkButton(file2_frame, text="Selecionar Ficheiro Novo (Comparação)...", font=theme.fonts["button"], command=self.handle_file2_selection, fg_color=theme.colors["comment"])
+#4
+        self.btn_select_file2 = ctk.CTkButton(file2_frame, text="Selecionar Arquivo Novo (Comparação)...", font=theme.fonts["button"], command=self.handle_file2_selection, fg_color=theme.colors["comment"])
         self.btn_select_file2.pack(padx=15, pady=15, fill='x')
+#4
         self.lbl_filepath2 = ctk.CTkLabel(file2_frame, text="Nenhum arquivo.", font=theme.fonts["body"], text_color=theme.colors["comment"])
         self.lbl_filepath2.pack(padx=15, pady=(0, 15), anchor='w')
 
@@ -50,6 +54,7 @@ class ComparerTab(BaseTab):
                                    highlightthickness=0, selectborderwidth=0, font=theme.fonts["body"])
         self.key_listbox.grid(row=2, column=0, sticky='ew', padx=15, pady=(0,15))
         
+#4
         self.btn_process = ctk.CTkButton(config_action_frame, text="Comparar Arquivos", command=self.processar, font=theme.fonts["button"], state='disabled',
                                          fg_color=theme.colors["accent"], text_color=theme.colors["background"], hover_color=theme.colors["pink"])
         self.btn_process.grid(row=3, column=0, sticky='ew', padx=15, pady=(0,15))
@@ -97,7 +102,8 @@ class ComparerTab(BaseTab):
             for col in common_columns:
                 self.key_listbox.insert("end", col)
             self.btn_process.configure(state='normal')
-            self.app.log("Ambos os ficheiros carregados. Colunas chave em comum atualizadas.")
+#4
+            self.app.log("Ambos os arquivos carregados. Colunas chave em comum atualizadas.")
         else:
             self.btn_process.configure(state='disabled')
 
@@ -110,6 +116,7 @@ class ComparerTab(BaseTab):
         key_columns = [self.key_listbox.get(i) for i in selected_indices]
         
         if self.df1 is None or self.df2 is None:
+#4
             messagebox.showerror("Erro", "Carregue ambos os arquivos antes de comparar.")
             return
 
@@ -121,7 +128,8 @@ class ComparerTab(BaseTab):
 
             for col in key_columns:
                 if not (col in df1_copy.columns and col in df2_copy.columns):
-                    messagebox.showerror("Erro de Chave", f"A coluna chave '{col}' não foi encontrada em ambos os ficheiros.")
+#4
+                    messagebox.showerror("Erro de Chave", f"A coluna chave '{col}' não foi encontrada em ambos os arquivos.")
                     return
                 df1_copy[col] = df1_copy[col].astype(str)
                 df2_copy[col] = df2_copy[col].astype(str)

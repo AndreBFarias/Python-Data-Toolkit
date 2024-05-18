@@ -19,8 +19,10 @@ class ProfilerTab(BaseTab):
         file_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=(0, 15))
         file_frame.columnconfigure(1, weight=1)
 
+#4
         self.btn_select_file = ctk.CTkButton(file_frame, text="Selecionar Arquivo para Análise...", font=theme.fonts["button"], command=self.handle_file_selection, fg_color=theme.colors["comment"])
         self.btn_select_file.grid(row=0, column=0, padx=15, pady=15)
+#4
         self.lbl_filepath = ctk.CTkLabel(file_frame, text="Nenhum arquivo selecionado.", font=theme.fonts["body"], text_color=theme.colors["comment"])
         self.lbl_filepath.grid(row=0, column=1, padx=15, pady=15, sticky="w")
 
@@ -90,6 +92,7 @@ class ProfilerTab(BaseTab):
 
     def run_profile(self):
         if self.df is None: return
+#4
         self.app.log("Iniciando análise do arquivo...")
 
         self.summary_text.configure(state='normal')
@@ -146,7 +149,9 @@ class ProfilerTab(BaseTab):
         report_path = filedialog.asksaveasfilename(
             title="Salvar Relatório de Análise",
             defaultextension=".txt",
+#4
             filetypes=[("Text files", "*.txt"), ("All files", "*.*")],
+#4
             initialfile=f"analise_{os.path.splitext(os.path.basename(self.filepath))[0]}.txt"
         )
 
@@ -157,7 +162,8 @@ class ProfilerTab(BaseTab):
             with open(report_path, 'w', encoding='utf-8') as f:
                 f.write("RELATÓRIO DE ANÁLISE DE DADOS\n")
                 f.write("="*40 + "\n\n")
-                f.write("FICHEIRO ANALISADO:\n")
+#4
+                f.write("ARQUIVO ANALISADO:\n")
                 f.write(f"{self.filepath}\n\n")
                 f.write("SUMÁRIO GERAL:\n")
                 f.write(self.summary_text.get('1.0', ctk.END) + "\n")
@@ -170,6 +176,7 @@ class ProfilerTab(BaseTab):
                     values = self.tree.item(child_id)['values']
                     f.write("\t".join(map(str, values)) + "\n")
 
+#4
             messagebox.showinfo("Sucesso", f"Relatório salvo com sucesso em:\n{report_path}")
             self.app.log(f"Relatório de análise exportado para {report_path}")
         except Exception as e:

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Define o nome do ficheiro de atalho e o seu caminho
+#4
+# Define o nome do arquivo de atalho e o seu caminho
 APP_NAME="Data Toolkit"
 DESKTOP_FILE_NAME="data-toolkit.desktop"
 DESKTOP_FILE_PATH="$HOME/.local/share/applications/$DESKTOP_FILE_NAME"
@@ -8,11 +9,14 @@ DESKTOP_FILE_PATH="$HOME/.local/share/applications/$DESKTOP_FILE_NAME"
 echo "Iniciando a desinstalação do $APP_NAME..."
 
 # Pergunta ao utilizador se deseja realmente desinstalar
+#4
 read -p "Tem a certeza que deseja remover o atalho da aplicação do seu sistema? [s/N] " response
 if [[ "$response" =~ ^([sS][iI][mM]|[sS])$ ]]; then
-    # Verifica se o ficheiro .desktop existe
+#4
+    # Verifica se o arquivo .desktop existe
     if [ -f "$DESKTOP_FILE_PATH" ]; then
-        echo "Removendo o ficheiro de atalho de $DESKTOP_FILE_PATH..."
+#4
+        echo "Removendo o arquivo de atalho de $DESKTOP_FILE_PATH..."
         rm "$DESKTOP_FILE_PATH"
         
         # Atualiza a base de dados de aplicações para que a mudança seja refletida
@@ -21,7 +25,8 @@ if [[ "$response" =~ ^([sS][iI][mM]|[sS])$ ]]; then
         
         echo "O atalho do $APP_NAME foi removido com sucesso."
     else
-        echo "O ficheiro de atalho não foi encontrado. Talvez a aplicação não tenha sido instalada corretamente."
+#4
+        echo "O arquivo de atalho não foi encontrado. Talvez a aplicação não tenha sido instalada corretamente."
     fi
 else
     echo "Desinstalação cancelada."
@@ -48,5 +53,3 @@ echo "Se desejar, pode agora removê-la com segurança:"
 echo "cd .. && rm -rf Python-Data-Toolkit"
 echo ""
 echo "Desinstalação concluída."
-
-

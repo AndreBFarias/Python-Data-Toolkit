@@ -105,20 +105,21 @@ class DataToolkitApp(ctk.CTk):
             first_tab_title = self.get_tab_definitions()[0][1]
             self.select_tab(first_tab_title)
 
+#2
     def get_tab_definitions(self):
-        # Reorganizar abas na ordem especificada
+        # Ordem lógica de fluxo de trabalho
         tab_order = [
-            (DBTAssistantTab, "Assistente dbt"),
-            (ETLPreparerTab, "Preparador ETL"),
-            (SegmenterTab, "Divisor"),
-            (CleanerTab, "Limpador"),
-            (AnonymizerTab, "Anonimizador"),
-            (UnifierTab, "Unificador"),
-            (ProfilerTab, "Analisador"),
-            (ComparerTab, "Comparador"),
-            (VisualizerTab, "Visualizador"),
-            (GeolocalizadorTab, "Geolocalizador"),
-            (SettingsTab, "Configurações")
+            (ProfilerTab, "Analisador"),       # 1. Veja o que você tem
+            (CleanerTab, "Limpador"),          # 2. Limpe os dados
+            (UnifierTab, "Unificador"),        # 3. Junte várias fontes
+            (ETLPreparerTab, "Preparador ETL"),  # 4. Prepare Schemas
+            (GeolocalizadorTab, "Geolocalizador"), # 5. Enriqueça
+            (AnonymizerTab, "Anonimizador"),   # 6. Proteja dados sensíveis
+            (SegmenterTab, "Divisor"),         # 7. Quebre para entrega
+            (ComparerTab, "Comparador"),       # 8. Compare versões
+            (VisualizerTab, "Visualizador"),   # 9. Gere gráficos
+            (DBTAssistantTab, "Assistente dbt"), # 10. Ferramenta específica
+            (SettingsTab, "Configurações")     # 11. Sempre por último
         ]
         return tab_order
 

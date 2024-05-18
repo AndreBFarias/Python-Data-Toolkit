@@ -1,5 +1,6 @@
 # base_tab.py
 import customtkinter as ctk
+#4
 from tkinter import filedialog, messagebox, simpledialog
 import pandas as pd
 import os
@@ -15,13 +16,16 @@ class BaseTab(ctk.CTkFrame):
         initial_dir = self.app.config_manager.get("default_import_path") or os.path.expanduser("~")
         
         filepath = filedialog.askopenfilename(
+#4
             title="Selecionar Arquivo",
+#4
             filetypes=[("Planilhas (CSV, Excel)", "*.csv *.xlsx *.xls"), ("Todos os arquivos", "*.*")],
             initialdir=initial_dir
         )
         if filepath:
             setattr(self, target_path_attr, filepath)
             label_widget.configure(text=os.path.basename(filepath))
+#4
             self.app.log(f"Arquivo selecionado: {filepath}")
             return True
         return False
@@ -35,6 +39,7 @@ class BaseTab(ctk.CTkFrame):
             csv_separator = self.app.config_manager.get("csv_separator") or ','
             
             if file_path.lower().endswith('.csv'):
+#4
                 sep = simpledialog.askstring("Separador de CSV", "Qual o separador do arquivo CSV?", initialvalue=csv_separator)
                 if sep is None: # Usuário cancelou
                     return None
@@ -45,18 +50,23 @@ class BaseTab(ctk.CTkFrame):
                 # Tentativa inicial com UTF-8
                 try:
                     df = pd.read_csv(file_path, sep=sep, encoding='utf-8', low_memory=False)
+#4
                     self.app.log(f"Arquivo carregado com sucesso (encoding: utf-8).")
                 except UnicodeDecodeError:
                     # Fallback para Latin-1 em caso de falha
                     df = pd.read_csv(file_path, sep=sep, encoding='latin-1', low_memory=False)
+#4
                     self.app.log(f"Arquivo carregado com sucesso (fallback encoding: latin-1).")
             else:
                 df = pd.read_excel(file_path)
             
+#4
             self.app.log("Arquivo carregado com sucesso.")
             return df
         except Exception as e:
+#4
             messagebox.showerror("Erro ao Carregar Arquivo", f"Não foi possível ler o arquivo:\n{e}")
+#4
             self.app.log(f"ERRO ao carregar {file_path}: {e}")
             return None
 
@@ -66,13 +76,16 @@ class BaseTab(ctk.CTkFrame):
             return False
 
         initial_dir = self.app.config_manager.get("default_export_path") or os.path.expanduser("~")
+#4
         initial_filename = "UNIFICADO" if is_unifier else f"processado_{os.path.splitext(os.path.basename(self.filepath or 'arquivo'))[0]}"
 
         filepath = filedialog.asksaveasfilename(
+#4
             title="Salvar Arquivo Como",
             initialdir=initial_dir,
             initialfile=initial_filename,
             defaultextension=".xlsx",
+#4
             filetypes=[("Excel files", "*.xlsx"), ("CSV files", "*.csv")]
         )
 
@@ -86,11 +99,15 @@ class BaseTab(ctk.CTkFrame):
             else:
                 df_to_save.to_excel(filepath, index=False)
             
+#4
             self.app.log(f"Arquivo salvo com sucesso em {filepath}")
+#4
             messagebox.showinfo("Sucesso", f"Arquivo salvo com sucesso em:\n{filepath}")
             return True
         except Exception as e:
+#4
             messagebox.showerror("Erro ao Salvar", f"Não foi possível salvar o arquivo:\n{e}")
+#4
             self.app.log(f"ERRO ao salvar arquivo: {e}")
             return False
             
@@ -101,6 +118,8 @@ class BaseTab(ctk.CTkFrame):
                 df_to_save.to_csv(filepath, index=False, encoding='utf-8-sig', sep=csv_separator)
             else:
                 df_to_save.to_excel(filepath, index=False)
+#4
             self.app.log(f" -> Arquivo salvo: {os.path.basename(filepath)}")
         except Exception as e:
+#4
             self.app.log(f" -> ERRO ao salvar {os.path.basename(filepath)}: {e}")

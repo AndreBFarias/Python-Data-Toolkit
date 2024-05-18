@@ -20,8 +20,10 @@ class SegmenterTab(BaseTab):
         file_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=(0, 15))
         file_frame.columnconfigure(1, weight=1)
         
+#4
         self.btn_select_file = ctk.CTkButton(file_frame, text="Selecionar Arquivo...", font=theme.fonts["button"], command=self.handle_file_selection, fg_color=theme.colors["comment"])
         self.btn_select_file.grid(row=0, column=0, padx=15, pady=15)
+#4
         self.lbl_filepath = ctk.CTkLabel(file_frame, text="Nenhum arquivo selecionado.", font=theme.fonts["body"], text_color=theme.colors["comment"])
         self.lbl_filepath.grid(row=0, column=1, padx=15, pady=15, sticky="w")
 
@@ -48,13 +50,15 @@ class SegmenterTab(BaseTab):
         self.threshold_var = ctk.IntVar(value=10)
         self.threshold_entry = ctk.CTkEntry(adv_options_frame, textvariable=self.threshold_var, width=60, state='disabled', fg_color=theme.colors["background"], border_color=theme.colors["comment"])
         self.threshold_entry.pack(side='left', anchor='w', padx=5)
-        ctk.CTkLabel(adv_options_frame, text="linhas num ficheiro 'Outros'", font=theme.fonts["body"]).pack(side='left', anchor='w')
+#4
+        ctk.CTkLabel(adv_options_frame, text="linhas num arquivo 'Outros'", font=theme.fonts["body"]).pack(side='left', anchor='w')
 
         naming_frame = ctk.CTkFrame(config_frame, fg_color="transparent")
         naming_frame.pack(fill='x', padx=15, pady=(20, 15))
         naming_frame.columnconfigure(1, weight=1)
         naming_frame.columnconfigure(3, weight=1)
-        ctk.CTkLabel(naming_frame, text="Nomenclatura dos Ficheiros de Saída:", font=theme.fonts["body"]).grid(row=0, column=0, columnspan=4, sticky='w', pady=(0,10))
+#4
+        ctk.CTkLabel(naming_frame, text="Nomenclatura dos Arquivos de Saída:", font=theme.fonts["body"]).grid(row=0, column=0, columnspan=4, sticky='w', pady=(0,10))
         
         ctk.CTkLabel(naming_frame, text="Prefixo:", font=theme.fonts["body"]).grid(row=1, column=0, sticky='w', padx=(0, 5))
         self.prefix_var = ctk.StringVar()
@@ -103,7 +107,8 @@ class SegmenterTab(BaseTab):
         if self.selecionar_arquivo(self.lbl_filepath):
             self.df = self.carregar_dataframe(self.filepath)
             if self.df is not None:
-                self.app.log("Ficheiro carregado. Pode configurar a divisão.")
+#4
+                self.app.log("Arquivo carregado. Pode configurar a divisão.")
                 self.enable_controls()
                 self.populate_column_combos(None)
             else:
@@ -140,14 +145,16 @@ class SegmenterTab(BaseTab):
 
     def _get_groups(self):
         if self.df is None:
-            return None, "Nenhum ficheiro carregado."
+#4
+            return None, "Nenhum arquivo carregado."
         selected_columns = self._get_selected_columns()
         if not selected_columns:
             return None, "Selecione pelo menos uma coluna para dividir."
         try:
             return self.df.groupby(selected_columns), None
         except KeyError:
-            return None, "Uma ou mais colunas selecionadas não foram encontradas. Recarregue o ficheiro."
+#4
+            return None, "Uma ou mais colunas selecionadas não foram encontradas. Recarregue o arquivo."
 
     def preview_segmentation(self):
         groups, error = self._get_groups()
@@ -155,7 +162,8 @@ class SegmenterTab(BaseTab):
             messagebox.showwarning("Aviso", error)
             return
         total_groups = len(groups)
-        summary = f"A divisão irá gerar {total_groups} ficheiros.\n\n"
+#4
+        summary = f"A divisão irá gerar {total_groups} arquivos.\n\n"
         summary += "Primeiras 15 categorias (e contagem de linhas):\n" + "="*40 + "\n"
         for i, (name, group) in enumerate(groups):
             if i >= 15:
@@ -170,7 +178,8 @@ class SegmenterTab(BaseTab):
         if error:
             messagebox.showerror("Erro", error)
             return
-        output_folder = filedialog.askdirectory(title="Selecione a pasta para salvar os ficheiros")
+#4
+        output_folder = filedialog.askdirectory(title="Selecione a pasta para salvar os arquivos")
         if not output_folder:
             return
         num_groups = len(groups)
@@ -203,7 +212,8 @@ class SegmenterTab(BaseTab):
                 filename = "_".join(filter(None, [prefix, "Outros", suffix]))
                 filepath = os.path.join(output_folder, f"{filename}.{file_extension}")
                 self.salvar_dataframe_por_tipo(small_groups_df, filepath, file_extension)
-            self.app.log(f"Divisão concluída. Ficheiros salvos em {output_folder}")
+#4
+            self.app.log(f"Divisão concluída. Arquivos salvos em {output_folder}")
         except Exception as e:
             messagebox.showerror("Erro no Processamento", f"Ocorreu um erro:\n{e}")
             self.app.log(f"ERRO durante a divisão: {e}")
