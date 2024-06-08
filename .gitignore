@@ -183,3 +183,4 @@ excel/
 # Ambientes virtuais e cache (já incluídas)
 venv/
 __pycache__/
+excel/
