@@ -20,7 +20,7 @@ Fiz este programa para juntar num só lugar algumas ferramentas que me ajudam a 
 <center>
 <div style="text-align: center;">
   <h3 style="font-size: 2em;">Interface</h3>
-    <img src="https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/screenshot.png" width="800" alt="Screenshot do Data Toolkit">
+    <img src="https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/background.png" width="800" alt="Screenshot do Data Toolkit">
 </div>
 </center>
 
