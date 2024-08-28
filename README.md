@@ -8,8 +8,10 @@
 
 
 <div style="text-align: center;">
-  <h1 style="font-size: 2em;">Python Data Toolkit</h1>
-  <img src="https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/icon.png" width="200" alt="Ícone do Data Toolkit">
+  <h1 style="font-size: 2em;">Python Data Toolkit</h1>
+    
+  <img src="https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/icon.png" width="250" alt="Ícone do Data Toolkit">
+  
 </div>
 </div>
 
@@ -19,72 +21,70 @@ Fiz este programa para juntar num só lugar algumas ferramentas que me ajudam a 
 
 <center>
 <div style="text-align: center;">
-  <h3 style="font-size: 2em;">Interface</h3>
-    <img src="https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/background.png" width="800" alt="Screenshot do Data Toolkit">
+  <h3 style="font-size: 2em;">Interface</h3>
+    <img src="https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/background.png" width="700" alt="Screenshot do Data Toolkit">
 </div>
 </center>
 
----
+## Funcionalidades
 
-### Pré-requisitos
+*   **Analisador**: Perfilamento de dados (estatísticas, nulos, tipos).
+*   **Limpador**: Limpeza de dados (remoção de duplicatas, tratamento de nulos).
+*   **Unificador**: Combinação de múltiplos arquivos (Excel/CSV).
+*   **Preparador ETL**: Transformações comuns para pipelines de dados.
+*   **Geolocalizador**: Enriquecimento de dados com coordenadas (via CEP/Endereço).
+*   **Anonimizador**: Mascaramento de dados sensíveis (LGPD).
+*   **Divisor**: Segmentação de arquivos grandes.
+*   **Comparador**: Comparação entre dois datasets.
+*   **Visualizador**: Geração de gráficos rápidos.
+*   **Extrator**: Extração de tabelas e texto de PDFs e DOCX.
+*   **Auxiliador IA**: Assistente inteligente integrado (Gemini) para tirar dúvidas e gerar código.
 
-- Python 3.10 ou superior.
-- Para a aba "Preparador ETL", é preciso ter uma chave de API do Google Gemini.
+## Estrutura do Projeto
 
-### Instalação
-
-Para quem usa Linux, o script `install.sh` tenta facilitar o processo, criando o ambiente virtual e um atalho no menu de aplicações.
-
-```
-
-# 1. Baixar o projeto
-git clone [https://github.com/AndreBFarias/Python-Data-Toolkit.git](https://github.com/AndreBFarias/Python-Data-Toolkit.git)
-cd Python-Data-Toolkit
-
-# 2. (Opcional) Criar o ficheiro .env para a chave da API
-cp .env.example .env
-# E depois editar o ficheiro para colocar a sua chave
-# nano .env
-
-# 3. Executar o instalador
-chmod +x install.sh
-./install.sh
-```
-
-
-Depois disto, o "Data Toolkit" deve aparecer no seu menu de aplicações, e você pode fixá-lo na sua dock se quiser.
-
-### Para Desinstalar
-
+O projeto foi refatorado para uma arquitetura modular:
 
 ```
-chmod +x uninstall.sh
-./uninstall.sh
+Python-Data-Toolkit/
+├── src/
+│   ├── core/           # Lógica central (config, dados estáticos)
+│   ├── tabs/           # Módulos de cada aba (funcionalidades)
+│   ├── ui/             # Componentes de UI e classe principal da App
+│   └── main.py         # Ponto de entrada (interno)
+├── assets/             # Imagens e ícones
+├── main.py             # Ponto de entrada principal
+├── requirements.txt    # Dependências
+└── README.md           # Documentação
 ```
 
-### O que ele faz?
+## Instalação
 
-Cada aba é uma ferramenta para uma tarefa diferente:
+1.  Clone o repositório.
+2.  Crie um ambiente virtual:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+3.  Instale as dependências:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-- **Preparador ETL**: Prepara uma tabela para ser importada num banco de dados, sugerindo o schema (formato das colunas) com a ajuda de IA.
-    
-- **Segmentador**: Pega um ficheiro grande e o quebra em vários ficheiros menores.
-    
-- **Limpador**: Ajuda a arrumar a casa: remove linhas duplicadas, espaços a mais, etc.
-    
-- **Anonimizador**: Troca informações sensíveis (como nomes ou CPFs) por dados falsos, para proteger a privacidade.
-    
-- **Unificador**: Junta vários ficheiros de uma pasta num só.
-    
-- **Analisador**: Mostra um resumo rápido do seu ficheiro: quantas linhas, colunas, dados em falta, etc.
-    
-- **Comparador**: Mostra o que mudou entre duas versões de uma mesma tabela.
-    
-- **Visualizador**: Cria alguns gráficos simples para ter uma ideia visual dos seus dados.
-    
-- **Assistente dbt**: Uma ajuda para automatizar a criação de documentação para modelos dbt.
-    
+## Uso
 
-### Licença
+Execute o arquivo principal:
+
+```bash
+python3 main.py
+```
+
+## Configuração
+
+*   **API Gemini**: Para usar o Auxiliador IA, configure sua chave de API na aba "Configurações".
+*   **Pastas Padrão**: Defina pastas de entrada e saída padrão nas configurações para agilizar o fluxo de trabalho.
+
+
+
+## Licença
 
 Este projeto usa a licença GPLv3. Fique à vontade para usar, modificar e partilhar. Desde que tudo permaneça livre.
