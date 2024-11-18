@@ -1,20 +1,12 @@
-<div align="center">
-    
 [![opensource](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](#)
 [![licença](https://img.shields.io/badge/licença-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python](https://img.shields.io/badge/python-3.10+-green.svg)](https://www.python.org/)
 [![Estrelas](https://img.shields.io/github/stars/AndreBFarias/Python-Data-Toolkit.svg?style=social)](https://github.com/AndreBFarias/Python-Data-Toolkit/stargazers)
 [![Contribuições](https://img.shields.io/badge/contribuições-bem--vindas-brightgreen.svg)](https://github.com/AndreBFarias/Python-Data-Toolkit/issues)
 
+# Python Data Toolkit
 
-<div style="text-align: center;">
-  <h1 style="font-size: 2em;">Python Data Toolkit</h1>
-    
-  <img src="https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/icon.png" width="250" alt="Ícone do Data Toolkit">
-  
-</div>
-</div>
-
+![Ícone do Data Toolkit](https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/icon.png)
 Fiz este programa para juntar num só lugar algumas ferramentas que me ajudam a resolver tarefas chatas e repetitivas com planilhas. A ideia é ter uma interface simples para poder, por exemplo, dividir uma tabela muito grande, limpar colunas bagunçadas ou comparar duas versões de um mesmo relatório sem precisar de escrever código.
 
 ---
