@@ -7,7 +7,8 @@
 # Python Data Toolkit
 
 ![Ícone do Data Toolkit](https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/icon.png)
-Fiz este programa para juntar num só lugar algumas ferramentas que me ajudam a resolver tarefas chatas e repetitivas com planilhas. A ideia é ter uma interface simples para poder, por exemplo, dividir uma tabela muito grande, limpar colunas bagunçadas ou comparar duas versões de um mesmo relatório sem precisar de escrever código.
+
+Ferramentas visuais para manipulação e análise de dados tabulares. Reúne num único lugar funcionalidades para dividir, limpar, comparar e transformar planilhas sem escrever código, com assistente de IA integrado.
 
 ---
 
