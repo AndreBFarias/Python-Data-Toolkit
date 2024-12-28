@@ -12,12 +12,15 @@ Ferramentas visuais para manipulação e análise de dados tabulares. Reúne num
 
 ---
 
-<center>
-<div style="text-align: center;">
-  <h3 style="font-size: 2em;">Interface</h3>
-    <img src="https://github.com/AndreBFarias/Python-Data-Toolkit/blob/main/assets/background.png" width="700" alt="Screenshot do Data Toolkit">
-</div>
-</center>
+## Interface
+
+![Screenshot do Data Toolkit](https://github.com/AndreBFarias/Python-Data-Toolkit/blob/main/assets/background.png)
+
+## Pré-requisitos
+
+- Python 3.10 ou superior
+- Sistema operacional: Linux ou Windows
+- Chave de API do Google Gemini (para o módulo Auxiliador IA)
 
 ## Funcionalidades
 
