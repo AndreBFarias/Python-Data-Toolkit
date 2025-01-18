@@ -14,7 +14,7 @@ Ferramentas visuais para manipulação e análise de dados tabulares. Reúne num
 
 ## Interface
 
-![Screenshot do Data Toolkit](https://github.com/AndreBFarias/Python-Data-Toolkit/blob/main/assets/background.png)
+![Screenshot do Data Toolkit](https://raw.githubusercontent.com/AndreBFarias/Python-Data-Toolkit/main/assets/background.png)
 
 ## Pré-requisitos
 
@@ -55,16 +55,19 @@ Python-Data-Toolkit/
 
 ## Instalação
 
-1.  Clone o repositório.
-2.  Crie um ambiente virtual:
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-3.  Instale as dependências:
-    ```bash
-    pip install -r requirements.txt
-    ```
+```bash
+git clone https://github.com/AndreBFarias/Python-Data-Toolkit.git
+cd Python-Data-Toolkit
+./install.sh
+```
+
+Ou manualmente:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
 ## Uso
 
