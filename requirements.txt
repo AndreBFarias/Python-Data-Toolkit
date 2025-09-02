@@ -1,0 +1,9 @@
+pandas
+openpyxl
+Pillow
+faker
+seaborn
+matplotlib
+google-generativeai
+python-dotenv 
+pyyaml
