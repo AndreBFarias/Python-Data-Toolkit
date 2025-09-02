@@ -1,75 +1,73 @@
 #!/bin/bash
 
-# --- O Arauto do Data Toolkit ---
-# Este script é o diplomata que apresenta nossa criação ao sistema.
-# Ele constrói o executável e cria o atalho no menu de aplicações.
+# Encontra o diretório onde o script está a ser executado
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+APP_NAME="Data Toolkit"
+VENV_DIR="venv"
+DESKTOP_FILE_NAME="data-toolkit.desktop"
+INSTALL_DIR="$HOME/.local/share/applications"
 
-echo "Configurando o Data Toolkit..."
-
-# 1. Autoconsciência: Encontrar o caminho absoluto do script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
-echo "Diretório do projeto encontrado em: $SCRIPT_DIR"
-
-# 2. Construção com PyInstaller
-echo "Construindo o executável com PyInstaller..."
-echo "Isso pode levar alguns minutos..."
-
-# Navega para o diretório do projeto para o PyInstaller funcionar corretamente
+echo "### Configurando o $APP_NAME ###"
+echo ""
 cd "$SCRIPT_DIR"
 
-# Roda o PyInstaller
-# --noconfirm: Sobrescreve a build anterior sem perguntar
-# --onefile: Cria um único executável
-# --windowed: Não abre um console de terminal ao executar a app
-# --icon: Define o ícone da aplicação
-# --name: Define o nome do executável e do app
-pyinstaller --noconfirm --onefile --windowed --icon="assets/icon.png" --name="DataToolkit" main.py
-
-# Verifica se a construção foi bem-sucedida
-BUILD_SUCCESS=$?
-EXECUTABLE_PATH="$SCRIPT_DIR/dist/DataToolkit"
-
-if [ $BUILD_SUCCESS -ne 0 ]; then
-    echo "ERRO: A construção com PyInstaller falhou. Por favor, verifique os logs acima."
+# 1. Verifica se o Python 3 e o venv estão disponíveis
+if ! command -v python3 &> /dev/null || ! python3 -m venv -h &> /dev/null; then
+    echo "ERRO: Python 3 e/ou o módulo 'venv' não foram encontrados."
+    echo "Por favor, instale-os para continuar (ex: sudo apt install python3 python3-venv)."
     exit 1
 fi
 
-if [ ! -f "$EXECUTABLE_PATH" ]; then
-    echo "ERRO: O executável não foi encontrado em '$EXECUTABLE_PATH' após a construção."
-    exit 1
+# 2. Cria o ambiente virtual se não existir
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Criando ambiente virtual em '$VENV_DIR'..."
+    python3 -m venv "$VENV_DIR"
+    if [ $? -ne 0 ]; then
+        echo "ERRO: Falha ao criar o ambiente virtual."
+        exit 1
+    fi
+else
+    echo "Ambiente virtual já existente."
 fi
 
-echo "Executável criado com sucesso em: $EXECUTABLE_PATH"
+# 3. Instala as dependências
+echo "Instalando dependências do requirements.txt..."
+"$SCRIPT_DIR/$VENV_DIR/bin/pip" install -r requirements.txt
+if [ $? -ne 0 ]; then
+    echo "ERRO: Falha ao instalar as dependências via pip."
+    exit 1
+fi
+echo "Dependências instaladas com sucesso."
 
-# 3. Criação do Atalho (.desktop)
-echo "Criando o ficheiro de atalho..."
-DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
-mkdir -p "$DESKTOP_ENTRY_DIR" # Garante que o diretório exista
+# 4. Cria o ficheiro .desktop para integração com o sistema
+echo "Criando atalho da aplicação..."
+mkdir -p "$INSTALL_DIR"
 
-DESKTOP_FILE_PATH="$DESKTOP_ENTRY_DIR/data-toolkit.desktop"
-ICON_PATH="$SCRIPT_DIR/assets/icon.png"
-
-# Escreve o conteúdo no ficheiro .desktop
-cat > "$DESKTOP_FILE_PATH" << EOL
+# Cria o conteúdo do ficheiro .desktop
+cat > "$INSTALL_DIR/$DESKTOP_FILE_NAME" << EOL
 [Desktop Entry]
 Version=1.0
-Name=Data Toolkit
-Comment=Um conjunto de ferramentas para manipulação de dados
-Exec="$EXECUTABLE_PATH"
-Icon="$ICON_PATH"
+Name=$APP_NAME
+Comment=Uma suíte de ferramentas para manipulação de dados
+Exec=$SCRIPT_DIR/$VENV_DIR/bin/python3 $SCRIPT_DIR/main.py
+Icon=$SCRIPT_DIR/assets/icon.png
 Terminal=false
 Type=Application
-Categories=Utility;Application;
+Categories=Utility;Application;Office;
+StartupWMClass=Data-Toolkit
 EOL
 
-# 4. Finalização
-echo "Instalando atalho em $DESKTOP_ENTRY_DIR..."
-# Atualiza a base de dados de aplicações para que o ícone apareça
-update-desktop-database "$DESKTOP_ENTRY_DIR"
+echo "Instalando atalho em $INSTALL_DIR..."
+
+# 5. Atualiza a base de dados de aplicações
+echo "Atualizando a base de dados de aplicações do sistema..."
+update-desktop-database "$INSTALL_DIR"
 
 echo ""
+echo "##############################################"
 echo "Instalação concluída com sucesso!"
-echo "Pode encontrar o 'Data Toolkit' no seu menu de aplicações."
+echo "Pode encontrar o '$APP_NAME' no seu menu de aplicações e fixá-lo na sua dock."
 echo "Pode levar alguns instantes para o ícone aparecer."
+echo "##############################################"
 
 
