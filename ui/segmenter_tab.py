@@ -1,8 +1,9 @@
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+import customtkinter as ctk
+from tkinter import filedialog, messagebox
 import pandas as pd
 import os
 from .base_tab import BaseTab
+from ui import theme
 
 class SegmenterTab(BaseTab):
     def __init__(self, master, app_instance):
@@ -12,88 +13,88 @@ class SegmenterTab(BaseTab):
         self.create_widgets()
 
     def create_widgets(self):
-        main_frame = ttk.Frame(self)
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
 
-        # --- SEÇÃO: FICHEIRO DE ORIGEM ---
-        file_frame = ttk.LabelFrame(main_frame, text="Ficheiro de Origem", padding=(15, 10))
-        file_frame.pack(fill='x', pady=(0, 20))
+        file_frame = ctk.CTkFrame(self, fg_color=theme.colors["sidebar"])
+        file_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=(0, 15))
+        file_frame.columnconfigure(1, weight=1)
+        
+        self.btn_select_file = ctk.CTkButton(file_frame, text="Selecionar Arquivo...", font=theme.fonts["button"], command=self.handle_file_selection, fg_color=theme.colors["comment"])
+        self.btn_select_file.grid(row=0, column=0, padx=15, pady=15)
+        self.lbl_filepath = ctk.CTkLabel(file_frame, text="Nenhum arquivo selecionado.", font=theme.fonts["body"], text_color=theme.colors["comment"])
+        self.lbl_filepath.grid(row=0, column=1, padx=15, pady=15, sticky="w")
 
-        self.btn_select_file = ttk.Button(file_frame, text="Selecionar Arquivo...", command=self.handle_file_selection)
-        self.btn_select_file.pack(side="left", padx=(0, 10))
-        self.lbl_filepath = ttk.Label(file_frame, text="Nenhum arquivo selecionado.")
-        self.lbl_filepath.pack(side="left", fill='x', expand=True)
+        config_frame = ctk.CTkFrame(self, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
+        config_frame.grid(row=1, column=0, sticky='nsew', padx=5)
+        config_frame.columnconfigure(0, weight=1)
 
-        # --- SEÇÃO: CONFIGURAÇÃO DA SEGMENTAÇÃO ---
-        config_frame = ttk.LabelFrame(main_frame, text="Configuração da Segmentação", padding=(15, 10))
-        config_frame.pack(fill='both', expand=True, pady=(0, 20))
-
-        # Colunas de Segmentação
-        self.cols_frame = ttk.Frame(config_frame)
-        self.cols_frame.pack(fill='x', pady=(0, 15))
-        ttk.Label(self.cols_frame, text="Dividir com base nas colunas:").pack(anchor='w')
+        ctk.CTkLabel(config_frame, text="Configuração da Divisão", font=theme.fonts["h1"]).pack(anchor='w', padx=15, pady=(15, 10))
+        self.cols_frame = ctk.CTkFrame(config_frame, fg_color="transparent")
+        self.cols_frame.pack(fill='x', padx=15, pady=(0, 5))
+        ctk.CTkLabel(self.cols_frame, text="Dividir com base nas colunas:", font=theme.fonts["body"]).pack(anchor='w', pady=(0,5))
         self.add_column_selector()
 
-        self.btn_add_column = ttk.Button(config_frame, text="+ Adicionar outra coluna para agrupar", command=self.add_column_selector, state='disabled')
-        self.btn_add_column.pack(anchor='w', pady=(0, 20))
+        self.btn_add_column = ctk.CTkButton(config_frame, text="+ Adicionar outra coluna para agrupar", font=theme.fonts["body"], command=self.add_column_selector, state='disabled', fg_color="transparent", border_width=1, border_color=theme.colors["comment"])
+        self.btn_add_column.pack(anchor='w', padx=15, pady=(0, 15))
 
-        # Opções Avançadas
-        adv_options_frame = ttk.Frame(config_frame)
-        adv_options_frame.pack(fill='x')
+        adv_options_frame = ctk.CTkFrame(config_frame, fg_color="transparent")
+        adv_options_frame.pack(fill='x', padx=15, pady=5)
         
-        self.group_small_var = tk.BooleanVar()
-        self.group_small_check = ttk.Checkbutton(adv_options_frame, text="Agrupar categorias com menos de", variable=self.group_small_var, state='disabled')
+        self.group_small_var = ctk.BooleanVar()
+        self.group_small_check = ctk.CTkCheckBox(adv_options_frame, text="Agrupar categorias com menos de", variable=self.group_small_var, state='disabled', font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"])
         self.group_small_check.pack(side='left', anchor='w')
 
-        self.threshold_var = tk.IntVar(value=10)
-        self.threshold_spinbox = ttk.Spinbox(adv_options_frame, from_=1, to=1000, textvariable=self.threshold_var, width=5, state='disabled')
-        self.threshold_spinbox.pack(side='left', anchor='w', padx=5)
-        ttk.Label(adv_options_frame, text="linhas num ficheiro 'Outros'").pack(side='left', anchor='w')
+        self.threshold_var = ctk.IntVar(value=10)
+        self.threshold_entry = ctk.CTkEntry(adv_options_frame, textvariable=self.threshold_var, width=60, state='disabled', fg_color=theme.colors["background"], border_color=theme.colors["comment"])
+        self.threshold_entry.pack(side='left', anchor='w', padx=5)
+        ctk.CTkLabel(adv_options_frame, text="linhas num ficheiro 'Outros'", font=theme.fonts["body"]).pack(side='left', anchor='w')
 
-        # Nomenclatura dos Ficheiros de Saída
-        naming_frame = ttk.LabelFrame(config_frame, text="Nomenclatura dos Ficheiros de Saída", padding=10)
-        naming_frame.pack(fill='x', pady=(20, 0))
-        
-        ttk.Label(naming_frame, text="Prefixo:").grid(row=0, column=0, sticky='w', padx=(0, 5))
-        self.prefix_var = tk.StringVar()
-        ttk.Entry(naming_frame, textvariable=self.prefix_var).grid(row=0, column=1, sticky='ew')
-        
-        ttk.Label(naming_frame, text="Sufixo:").grid(row=0, column=2, sticky='w', padx=(10, 5))
-        self.suffix_var = tk.StringVar()
-        ttk.Entry(naming_frame, textvariable=self.suffix_var).grid(row=0, column=3, sticky='ew')
+        naming_frame = ctk.CTkFrame(config_frame, fg_color="transparent")
+        naming_frame.pack(fill='x', padx=15, pady=(20, 15))
         naming_frame.columnconfigure(1, weight=1)
         naming_frame.columnconfigure(3, weight=1)
-
-        # --- SEÇÃO: FORMATO DE SAÍDA E AÇÃO ---
-        action_frame = ttk.LabelFrame(main_frame, text="Formato de Saída e Ação", padding=(15, 10))
-        action_frame.pack(fill='x', pady=(0, 10))
+        ctk.CTkLabel(naming_frame, text="Nomenclatura dos Ficheiros de Saída:", font=theme.fonts["body"]).grid(row=0, column=0, columnspan=4, sticky='w', pady=(0,10))
         
-        output_format_frame = ttk.Frame(action_frame)
-        output_format_frame.pack(fill='x', pady=(0,15))
-        ttk.Label(output_format_frame, text="Formato de Saída:").pack(side='left', padx=(0,10))
-        self.output_format_var = tk.StringVar(value='xlsx')
-        ttk.Radiobutton(output_format_frame, text="Excel (.xlsx)", variable=self.output_format_var, value='xlsx').pack(side='left', padx=5)
-        ttk.Radiobutton(output_format_frame, text="CSV (.csv)", variable=self.output_format_var, value='csv').pack(side='left', padx=5)
+        ctk.CTkLabel(naming_frame, text="Prefixo:", font=theme.fonts["body"]).grid(row=1, column=0, sticky='w', padx=(0, 5))
+        self.prefix_var = ctk.StringVar()
+        ctk.CTkEntry(naming_frame, textvariable=self.prefix_var, fg_color=theme.colors["background"], border_color=theme.colors["comment"]).grid(row=1, column=1, sticky='ew')
+        
+        ctk.CTkLabel(naming_frame, text="Sufixo:", font=theme.fonts["body"]).grid(row=1, column=2, sticky='w', padx=(15, 5))
+        self.suffix_var = ctk.StringVar()
+        ctk.CTkEntry(naming_frame, textvariable=self.suffix_var, fg_color=theme.colors["background"], border_color=theme.colors["comment"]).grid(row=1, column=3, sticky='ew')
 
-        buttons_frame = ttk.Frame(action_frame)
-        buttons_frame.pack(fill='x')
+        action_frame = ctk.CTkFrame(self, fg_color=theme.colors["sidebar"])
+        action_frame.grid(row=2, column=0, sticky="ew", padx=5, pady=15)
+        action_frame.columnconfigure(0, weight=1)
+        
+        output_format_frame = ctk.CTkFrame(action_frame)
+        output_format_frame.pack(fill='x', padx=15, pady=15)
+        ctk.CTkLabel(output_format_frame, text="Formato de Saída:", font=theme.fonts["body"]).pack(side='left', padx=(0,10))
+        self.output_format_var = ctk.StringVar(value='xlsx')
+        ctk.CTkRadioButton(output_format_frame, text="Excel (.xlsx)", variable=self.output_format_var, value='xlsx', font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(side='left', padx=5)
+        ctk.CTkRadioButton(output_format_frame, text="CSV (.csv)", variable=self.output_format_var, value='csv', font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(side='left', padx=5)
+
+        buttons_frame = ctk.CTkFrame(action_frame, fg_color="transparent")
+        buttons_frame.pack(fill='x', padx=15, pady=(0,15))
         buttons_frame.columnconfigure(0, weight=1)
         buttons_frame.columnconfigure(1, weight=1)
 
-        self.btn_preview = ttk.Button(buttons_frame, text="Pré-visualizar Segmentação", command=self.preview_segmentation, state='disabled')
+        self.btn_preview = ctk.CTkButton(buttons_frame, text="Pré-visualizar Divisão", font=theme.fonts["button"], command=self.preview_segmentation, state='disabled', fg_color="transparent", border_width=2, border_color=theme.colors["comment"])
         self.btn_preview.grid(row=0, column=0, sticky='ew', padx=(0, 5))
 
-        self.btn_process = ttk.Button(buttons_frame, text="Processar e Salvar", command=self.processar, style='Accent.TButton', state='disabled')
+        self.btn_process = ctk.CTkButton(buttons_frame, text="Processar e Salvar", command=self.processar, font=theme.fonts["button"], state='disabled', fg_color=theme.colors["green"], text_color=theme.colors["background"], hover_color="#81F9A1")
         self.btn_process.grid(row=0, column=1, sticky='ew', padx=(5, 0))
         
-        self.progress_bar = ttk.Progressbar(main_frame, orient='horizontal', mode='determinate')
-        self.progress_bar.pack(fill='x', pady=(10,0))
+        self.progress_bar = ctk.CTkProgressBar(self, orientation='horizontal', progress_color=theme.colors["green"])
+        self.progress_bar.grid(row=3, column=0, sticky="ew", padx=5, pady=(0,10))
+        self.progress_bar.set(0)
     
     def add_column_selector(self):
-        frame = ttk.Frame(self.cols_frame)
+        frame = ctk.CTkFrame(self.cols_frame, fg_color="transparent")
         frame.pack(fill='x', pady=2)
-        var = tk.StringVar()
-        combo = ttk.Combobox(frame, textvariable=var, state='disabled', width=40, postcommand=self.populate_column_combos)
+        var = ctk.StringVar()
+        combo = ctk.CTkComboBox(frame, variable=var, state='disabled', command=self.populate_column_combos, button_color=theme.colors["comment"], fg_color=theme.colors["background"], border_color=theme.colors["comment"])
         combo.pack(side='left', fill='x', expand=True)
         self.column_vars.append(var)
         self.column_combos.append(combo)
@@ -102,37 +103,37 @@ class SegmenterTab(BaseTab):
         if self.selecionar_arquivo(self.lbl_filepath):
             self.df = self.carregar_dataframe(self.filepath)
             if self.df is not None:
-                self.app.log("Ficheiro carregado. Pode configurar a segmentação.")
+                self.app.log("Ficheiro carregado. Pode configurar a divisão.")
                 self.enable_controls()
-                self.populate_column_combos()
+                self.populate_column_combos(None)
             else:
                 self.disable_controls()
 
     def enable_controls(self):
-        self.btn_add_column.config(state='normal')
-        self.group_small_check.config(state='normal')
-        self.threshold_spinbox.config(state='normal')
-        self.btn_preview.config(state='normal')
-        self.btn_process.config(state='normal')
+        self.btn_add_column.configure(state='normal')
+        self.group_small_check.configure(state='normal')
+        self.threshold_entry.configure(state='normal')
+        self.btn_preview.configure(state='normal')
+        self.btn_process.configure(state='normal')
         for combo in self.column_combos:
-            combo.config(state='readonly')
+            combo.configure(state='readonly')
             
     def disable_controls(self):
-        self.btn_add_column.config(state='disabled')
-        self.group_small_check.config(state='disabled')
-        self.threshold_spinbox.config(state='disabled')
-        self.btn_preview.config(state='disabled')
-        self.btn_process.config(state='disabled')
+        self.btn_add_column.configure(state='disabled')
+        self.group_small_check.configure(state='disabled')
+        self.threshold_entry.configure(state='disabled')
+        self.btn_preview.configure(state='disabled')
+        self.btn_process.configure(state='disabled')
         for combo in self.column_combos:
-            combo.config(state='disabled')
+            combo.configure(state='disabled')
         for var in self.column_vars:
             var.set('')
 
-    def populate_column_combos(self):
+    def populate_column_combos(self, choice):
         if self.df is None: return
         columns = list(self.df.columns)
         for combo in self.column_combos:
-            combo['values'] = columns
+            combo.configure(values=columns)
 
     def _get_selected_columns(self):
         return [var.get() for var in self.column_vars if var.get()]
@@ -142,7 +143,7 @@ class SegmenterTab(BaseTab):
             return None, "Nenhum ficheiro carregado."
         selected_columns = self._get_selected_columns()
         if not selected_columns:
-            return None, "Selecione pelo menos uma coluna para segmentar."
+            return None, "Selecione pelo menos uma coluna para dividir."
         try:
             return self.df.groupby(selected_columns), None
         except KeyError:
@@ -153,40 +154,33 @@ class SegmenterTab(BaseTab):
         if error:
             messagebox.showwarning("Aviso", error)
             return
-
         total_groups = len(groups)
-        summary = f"A segmentação irá gerar {total_groups} ficheiros.\n\n"
+        summary = f"A divisão irá gerar {total_groups} ficheiros.\n\n"
         summary += "Primeiras 15 categorias (e contagem de linhas):\n" + "="*40 + "\n"
-        
         for i, (name, group) in enumerate(groups):
             if i >= 15:
                 summary += f"\n... e mais {total_groups - 15} categorias."
                 break
             summary += f"- {name}: {len(group)} linhas\n"
-            
-        messagebox.showinfo("Pré-visualização da Segmentação", summary)
-        self.app.log("Pré-visualização da segmentação gerada com sucesso.")
+        messagebox.showinfo("Pré-visualização da Divisão", summary)
+        self.app.log("Pré-visualização da divisão gerada com sucesso.")
 
     def processar(self):
         groups, error = self._get_groups()
         if error:
             messagebox.showerror("Erro", error)
             return
-
         output_folder = filedialog.askdirectory(title="Selecione a pasta para salvar os ficheiros")
         if not output_folder:
             return
-
-        self.progress_bar['maximum'] = len(groups)
-        self.progress_bar['value'] = 0
-
+        num_groups = len(groups)
+        self.progress_bar.set(0)
         prefix = self.prefix_var.get()
         suffix = self.suffix_var.get()
-        
         small_groups_df = pd.DataFrame()
         threshold = self.threshold_var.get() if self.group_small_var.get() else 0
         file_extension = self.output_format_var.get().lower()
-
+        processed_count = 0
         try:
             for name, group in groups:
                 if self.group_small_var.get() and len(group) < threshold:
@@ -198,27 +192,20 @@ class SegmenterTab(BaseTab):
                     else:
                         filename_parts.append(str(name))
                     filename_parts.append(suffix)
-                    
                     filename = "_".join(filter(None, filename_parts))
-                    safe_filename = "".join([c for c in filename if c.isalpha() or c.isdigit() or c in (' ', '-', '_')]).rstrip()
-                    
+                    safe_filename = "".join([c for c in filename if c.isalnum() or c in (' ', '-', '_')]).rstrip()
                     filepath = os.path.join(output_folder, f"{safe_filename}.{file_extension}")
                     self.salvar_dataframe_por_tipo(group, filepath, file_extension)
-
-                self.progress_bar.step()
-                self.app.update_idletasks() # CORREÇÃO: Usar self.app em vez de self.app.root
-
+                processed_count += 1
+                self.progress_bar.set(processed_count / num_groups)
+                self.app.update_idletasks()
             if not small_groups_df.empty:
                 filename = "_".join(filter(None, [prefix, "Outros", suffix]))
                 filepath = os.path.join(output_folder, f"{filename}.{file_extension}")
                 self.salvar_dataframe_por_tipo(small_groups_df, filepath, file_extension)
-
-            messagebox.showinfo("Sucesso", f"Processo concluído! Ficheiros salvos em:\n{output_folder}")
-            self.app.log(f"Segmentação concluída. Ficheiros salvos em {output_folder}")
+            self.app.log(f"Divisão concluída. Ficheiros salvos em {output_folder}")
         except Exception as e:
             messagebox.showerror("Erro no Processamento", f"Ocorreu um erro:\n{e}")
-            self.app.log(f"ERRO durante a segmentação: {e}")
+            self.app.log(f"ERRO durante a divisão: {e}")
         finally:
-            self.progress_bar['value'] = 0
-
-
+            self.progress_bar.set(0)

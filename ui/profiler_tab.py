@@ -1,45 +1,48 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk, filedialog, messagebox
 import pandas as pd
 import os
 from .base_tab import BaseTab
+from ui import theme
 
 class ProfilerTab(BaseTab):
     def __init__(self, master, app_instance):
         super().__init__(master, app_instance)
         self.create_widgets()
+        self.style_treeview()
 
     def create_widgets(self):
-        main_frame = ttk.Frame(self)
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
 
-        # --- SEÇÃO: FICHEIRO DE ORIGEM ---
-        file_frame = ttk.LabelFrame(main_frame, text="Ficheiro de Origem", padding=(15, 10))
-        file_frame.pack(fill='x', pady=(0, 20))
+        file_frame = ctk.CTkFrame(self, fg_color=theme.colors["sidebar"])
+        file_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=(0, 15))
+        file_frame.columnconfigure(1, weight=1)
 
-        self.btn_select_file = ttk.Button(file_frame, text="Selecionar Arquivo para Análise...", command=self.handle_file_selection)
-        self.btn_select_file.pack(side="left", padx=(0, 10))
-        self.lbl_filepath = ttk.Label(file_frame, text="Nenhum arquivo selecionado.")
-        self.lbl_filepath.pack(side="left", fill='x', expand=True)
+        self.btn_select_file = ctk.CTkButton(file_frame, text="Selecionar Arquivo para Análise...", font=theme.fonts["button"], command=self.handle_file_selection, fg_color=theme.colors["comment"])
+        self.btn_select_file.grid(row=0, column=0, padx=15, pady=15)
+        self.lbl_filepath = ctk.CTkLabel(file_frame, text="Nenhum arquivo selecionado.", font=theme.fonts["body"], text_color=theme.colors["comment"])
+        self.lbl_filepath.grid(row=0, column=1, padx=15, pady=15, sticky="w")
 
-        # --- SEÇÃO: RESULTADOS DA ANÁLISE ---
-        results_frame = ttk.LabelFrame(main_frame, text="Resultados da Análise", padding=(15, 10))
-        results_frame.pack(fill='both', expand=True, pady=(0, 20))
+        results_frame = ctk.CTkFrame(self, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
+        results_frame.grid(row=1, column=0, sticky='nsew', padx=5)
+        results_frame.columnconfigure(0, weight=1)
+        results_frame.rowconfigure(3, weight=1)
         
-        # Sumário Geral
-        self.summary_text = tk.Text(results_frame, height=5, wrap='word', state='disabled', 
-                                    bg=self.app.ALT_BG, fg=self.app.FG_COLOR, relief='flat',
-                                    font=('Inter', 10))
-        self.summary_text.pack(fill='x', pady=(0, 15))
-
-        # Detalhes por Coluna
-        ttk.Label(results_frame, text="Detalhes por Coluna:").pack(anchor='w', pady=(0, 5))
+        ctk.CTkLabel(results_frame, text="Resultados da Análise", font=theme.fonts["h1"]).grid(row=0, column=0, sticky='w', padx=15, pady=(15, 10))
         
-        tree_frame = ttk.Frame(results_frame)
-        tree_frame.pack(fill='both', expand=True)
+        self.summary_text = ctk.CTkTextbox(results_frame, height=110, wrap='word', state='disabled', 
+                                           font=theme.fonts["body"], corner_radius=8, fg_color=theme.colors["background"],
+                                           border_color=theme.colors["comment"], border_width=1)
+        self.summary_text.grid(row=1, column=0, sticky='ew', padx=15, pady=(0, 15))
 
+        ctk.CTkLabel(results_frame, text="Detalhes por Coluna:", font=theme.fonts["body"]).grid(row=2, column=0, sticky='w', padx=15, pady=(0, 5))
+        
+        tree_frame_container = ctk.CTkFrame(results_frame, fg_color=theme.colors["background"])
+        tree_frame_container.grid(row=3, column=0, sticky='nsew', padx=15, pady=(0, 15))
+        
         tree_columns = ("column", "type", "nulls", "uniques", "mean", "std", "min", "max")
-        self.tree = ttk.Treeview(tree_frame, columns=tree_columns, show="headings")
+        self.tree = ttk.Treeview(tree_frame_container, columns=tree_columns, show="headings")
         
         headings = {
             "column": "Coluna", "type": "Tipo de Dado", "nulls": "% Nulos", 
@@ -51,22 +54,34 @@ class ProfilerTab(BaseTab):
             self.tree.heading(col, text=text)
             self.tree.column(col, width=100, anchor='center')
 
-        # Scrollbars
-        ysb = ttk.Scrollbar(tree_frame, orient='vertical', command=self.tree.yview)
-        xsb = ttk.Scrollbar(tree_frame, orient='horizontal', command=self.tree.xview)
-        self.tree.configure(yscrollcommand=ysb.set, xscrollcommand=xsb.set)
+        self.tree.pack(fill='both', expand=True, padx=1, pady=1)
 
-        ysb.pack(side='right', fill='y')
-        xsb.pack(side='bottom', fill='x')
-        self.tree.pack(fill='both', expand=True)
-
-        # --- SEÇÃO: AÇÃO ---
-        action_frame = ttk.LabelFrame(main_frame, text="Ação", padding=(15, 10))
-        action_frame.pack(fill='x', pady=(0, 10))
+        action_frame = ctk.CTkFrame(self, fg_color="transparent")
+        action_frame.grid(row=2, column=0, sticky="ew", padx=5, pady=15)
+        action_frame.columnconfigure(0, weight=1)
         
-        self.btn_export = ttk.Button(action_frame, text="Exportar Relatório", command=self.export_report, style='Accent.TButton', state='disabled')
-        self.btn_export.pack(fill='x')
+        self.btn_export = ctk.CTkButton(action_frame, text="Exportar Relatório", command=self.export_report, font=theme.fonts["button"], state='disabled', 
+                                        fg_color=theme.colors["green"], text_color=theme.colors["background"], hover_color="#81F9A1")
+        self.btn_export.grid(row=0, column=0, sticky='ew', padx=0, pady=0)
 
+    def style_treeview(self):
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("Treeview",
+                        background=theme.colors["background"],
+                        foreground=theme.colors["foreground"],
+                        fieldbackground=theme.colors["background"],
+                        rowheight=25,
+                        borderwidth=0)
+        style.map("Treeview", background=[('selected', theme.colors["accent"])])
+        style.configure("Treeview.Heading",
+                        background=theme.colors["sidebar"],
+                        foreground=theme.colors["accent"],
+                        font=theme.fonts["button"],
+                        relief="flat",
+                        borderwidth=0)
+        style.map("Treeview.Heading", background=[('active', theme.colors["comment"])])
+    
     def handle_file_selection(self):
         if self.selecionar_arquivo(self.lbl_filepath):
             self.df = self.carregar_dataframe(self.filepath)
@@ -77,18 +92,16 @@ class ProfilerTab(BaseTab):
         if self.df is None: return
         self.app.log("Iniciando análise do arquivo...")
 
-        # Limpa widgets
-        self.summary_text.config(state='normal')
-        self.summary_text.delete('1.0', tk.END)
+        self.summary_text.configure(state='normal')
+        self.summary_text.delete('1.0', ctk.END)
         for i in self.tree.get_children():
             self.tree.delete(i)
 
-        # 1. Sumário Geral
         rows, cols = self.df.shape
         total_cells = self.df.size
         total_nulls = self.df.isnull().sum().sum()
         null_percentage = (total_nulls / total_cells) * 100 if total_cells > 0 else 0
-        memory_usage = self.df.memory_usage(deep=True).sum() / (1024 * 1024) # Em MB
+        memory_usage = self.df.memory_usage(deep=True).sum() / (1024 * 1024)
 
         summary = (
             f"Dimensões: {rows} linhas, {cols} colunas\n"
@@ -97,9 +110,8 @@ class ProfilerTab(BaseTab):
             f"Uso de Memória (aprox.): {memory_usage:.2f} MB"
         )
         self.summary_text.insert('1.0', summary)
-        self.summary_text.config(state='disabled')
+        self.summary_text.configure(state='disabled')
 
-        # 2. Detalhes por Coluna
         for column in self.df.columns:
             col_data = self.df[column]
             dtype = col_data.dtype
@@ -123,7 +135,7 @@ class ProfilerTab(BaseTab):
 
             self.tree.insert("", "end", values=tuple(stats.values()))
         
-        self.btn_export.config(state='normal')
+        self.btn_export.configure(state='normal')
         self.app.log("Análise concluída com sucesso.")
 
     def export_report(self):
@@ -135,7 +147,7 @@ class ProfilerTab(BaseTab):
             title="Salvar Relatório de Análise",
             defaultextension=".txt",
             filetypes=[("Text files", "*.txt"), ("All files", "*.*")],
-            initialfile=f"analise_{os.path.basename(self.filepath)}.txt"
+            initialfile=f"analise_{os.path.splitext(os.path.basename(self.filepath))[0]}.txt"
         )
 
         if not report_path:
@@ -148,14 +160,12 @@ class ProfilerTab(BaseTab):
                 f.write("FICHEIRO ANALISADO:\n")
                 f.write(f"{self.filepath}\n\n")
                 f.write("SUMÁRIO GERAL:\n")
-                f.write(self.summary_text.get('1.0', tk.END) + "\n")
+                f.write(self.summary_text.get('1.0', ctk.END) + "\n")
                 
                 f.write("DETALHES POR COLUNA:\n")
-                # Cabeçalhos
                 headers = [self.tree.heading(col)["text"] for col in self.tree['columns']]
                 f.write("\t".join(headers) + "\n")
                 f.write("="*80 + "\n")
-                # Dados
                 for child_id in self.tree.get_children():
                     values = self.tree.item(child_id)['values']
                     f.write("\t".join(map(str, values)) + "\n")
@@ -164,4 +174,3 @@ class ProfilerTab(BaseTab):
             self.app.log(f"Relatório de análise exportado para {report_path}")
         except Exception as e:
             messagebox.showerror("Erro ao Salvar", f"Não foi possível salvar o relatório:\n{e}")
-
