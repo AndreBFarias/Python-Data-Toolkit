@@ -1,34 +1,25 @@
-#1
-# import tkinter as tk # LINHA ANTIGA COMENTADA
-# from tkinter import ttk, filedialog, messagebox # LINHA ANTIGA COMENTADA
 import customtkinter as ctk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, simpledialog
 import pandas as pd
 import os
 
-#2
-# class BaseTab(ttk.Frame): # LINHA ANTIGA COMENTADA
 class BaseTab(ctk.CTkFrame):
     def __init__(self, master, app_instance):
-        super().__init__(master, fg_color="transparent") # O fg_color='transparent' faz com que a aba assuma a cor do frame de conteúdo
+        super().__init__(master, fg_color="transparent")
         self.app = app_instance
         self.df = None
         self.filepath = None
-        # self.pack(fill=tk.BOTH, expand=True) # LINHA ANTIGA COMENTADA - O layout agora é controlado pelo grid na classe principal
 
-#4
     def selecionar_arquivo(self, label_widget, target_path_attr='filepath'):
-        # Utiliza o caminho de importação padrão se estiver definido nas configurações
         initial_dir = self.app.config_manager.get("default_import_path") or os.path.expanduser("~")
         
         filepath = filedialog.askopenfilename(
             title="Selecionar Arquivo",
-            filetypes=[("Excel files", "*.xlsx *.xls"), ("CSV files", "*.csv"), ("All files", "*.*")],
+            filetypes=[("Planilhas (CSV, Excel)", "*.csv *.xlsx *.xls"), ("Todos os arquivos", "*.*")],
             initialdir=initial_dir
         )
         if filepath:
             setattr(self, target_path_attr, filepath)
-            # Assumindo que label_widget agora é um ctk.CTkLabel, o método de config é .configure()
             label_widget.configure(text=os.path.basename(filepath))
             self.app.log(f"Arquivo selecionado: {filepath}")
             return True
@@ -40,12 +31,20 @@ class BaseTab(ctk.CTkFrame):
         
         try:
             self.app.log(f"Carregando {os.path.basename(file_path)}...")
-            # Usa o separador de CSV das configurações
             csv_separator = self.app.config_manager.get("csv_separator") or ','
+            
             if file_path.lower().endswith('.csv'):
-                df = pd.read_csv(file_path, sep=csv_separator)
+                sep = simpledialog.askstring("Separador de CSV", "Qual o separador do arquivo CSV?", initialvalue=csv_separator)
+                if sep is None: # Usuário cancelou
+                    return None
+                
+                self.app.config_manager.set("csv_separator", sep)
+                self.app.config_manager.save_config()
+                
+                df = pd.read_csv(file_path, sep=sep, low_memory=False)
             else:
                 df = pd.read_excel(file_path)
+            
             self.app.log("Arquivo carregado com sucesso.")
             return df
         except Exception as e:
@@ -58,7 +57,6 @@ class BaseTab(ctk.CTkFrame):
             messagebox.showwarning("Aviso", "Não há dados para salvar.")
             return False
 
-        # Utiliza o caminho de exportação padrão se estiver definido
         initial_dir = self.app.config_manager.get("default_export_path") or os.path.expanduser("~")
         initial_filename = "UNIFICADO" if is_unifier else f"processado_{os.path.splitext(os.path.basename(self.filepath or 'arquivo'))[0]}"
 

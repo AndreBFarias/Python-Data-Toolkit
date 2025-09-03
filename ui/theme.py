@@ -13,11 +13,11 @@ colors = {
 
 # 2. Definições das Fontes (parâmetros, não objetos)
 font_definitions = {
-    "title": ("Roboto", 20, "bold"),
-    "h1": ("Roboto", 14, "bold"),
-    "body": ("Roboto", 12, "normal"),
-    "button": ("Roboto", 12, "bold"),
-    "code": ("monospace", 11, "normal"),
+    "title": ("Roboto", 24, "bold"),
+    "h1": ("Roboto", 16, "bold"),
+    "body": ("Roboto", 14, "normal"),
+    "button": ("Roboto", 14, "bold"),
+    "code": ("monospace", 12, "normal"),
 }
 
 # Dicionário que será populado com os objetos CTkFont
@@ -31,7 +31,7 @@ def initialize_fonts():
 
 # 3. Constantes de Tamanho e Estilo
 sizing = {
-    "sidebar_width": 200,
+    "sidebar_width": 300,
     "button_height": 40,
 }
 padding = {

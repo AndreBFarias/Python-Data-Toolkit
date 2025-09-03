@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 import pandas as pd
 import os
 import re
@@ -11,6 +11,7 @@ import google.generativeai as genai
 from .base_tab import BaseTab
 from ui import theme
 from ui.custom_widgets import EntryWithContextMenu, TextboxWithContextMenu
+
 
 class ETLPreparerTab(BaseTab):
     def __init__(self, master, app_instance):
@@ -105,8 +106,6 @@ class ETLPreparerTab(BaseTab):
         style.configure("Treeview.Heading", background=theme.colors["sidebar"], foreground=theme.colors["accent"], font=theme.fonts["button"], relief="flat", borderwidth=0)
         style.map("Treeview.Heading", background=[('active', theme.colors["comment"])])
     
-    # ... O resto dos métodos do ficheiro permanecem iguais ...
-
     def handle_file_selection(self):
         if self.selecionar_arquivo(self.lbl_filepath):
             self.df = self.carregar_dataframe(self.filepath)
