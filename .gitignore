@@ -205,3 +205,19 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+
+
+
+# Adições para o projeto Python-Data-Toolkit
+
+# Arquivos de dados temporários
+*.csv
+*.xlsx
+# Pastas de dados
+excel/
+
+# Ambientes virtuais e cache
+venv/
+__pycache__/
