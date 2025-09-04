@@ -1,3 +1,4 @@
+# base_tab.py
 import customtkinter as ctk
 from tkinter import filedialog, messagebox, simpledialog
 import pandas as pd
@@ -41,7 +42,14 @@ class BaseTab(ctk.CTkFrame):
                 self.app.config_manager.set("csv_separator", sep)
                 self.app.config_manager.save_config()
                 
-                df = pd.read_csv(file_path, sep=sep, low_memory=False)
+                # Tentativa inicial com UTF-8
+                try:
+                    df = pd.read_csv(file_path, sep=sep, encoding='utf-8', low_memory=False)
+                    self.app.log(f"Arquivo carregado com sucesso (encoding: utf-8).")
+                except UnicodeDecodeError:
+                    # Fallback para Latin-1 em caso de falha
+                    df = pd.read_csv(file_path, sep=sep, encoding='latin-1', low_memory=False)
+                    self.app.log(f"Arquivo carregado com sucesso (fallback encoding: latin-1).")
             else:
                 df = pd.read_excel(file_path)
             
