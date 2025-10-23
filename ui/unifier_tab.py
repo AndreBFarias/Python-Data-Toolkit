@@ -20,6 +20,7 @@ class UnifierTab(BaseTab):
         folder_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=(0, 15))
         folder_frame.columnconfigure(1, weight=1)
 
+#4
         self.btn_select_folder = ctk.CTkButton(folder_frame, text="Selecionar Pasta com os Arquivos...", font=theme.fonts["button"], command=self.handle_folder_selection, fg_color=theme.colors["comment"])
         self.btn_select_folder.grid(row=0, column=0, padx=15, pady=15)
         self.lbl_folderpath = ctk.CTkLabel(folder_frame, text="Nenhuma pasta selecionada.", font=theme.fonts["body"], text_color=theme.colors["comment"])
@@ -33,7 +34,8 @@ class UnifierTab(BaseTab):
         
         pattern_frame = ctk.CTkFrame(config_frame, fg_color="transparent")
         pattern_frame.pack(fill='x', padx=15, pady=10)
-        ctk.CTkLabel(pattern_frame, text="Padrão do nome do ficheiro (ex: `relatorio_*.xlsx`):", font=theme.fonts["body"]).pack(anchor='w', pady=(0,5))
+#4
+        ctk.CTkLabel(pattern_frame, text="Padrão do nome do arquivo (ex: `relatorio_*.xlsx`):", font=theme.fonts["body"]).pack(anchor='w', pady=(0,5))
         self.file_pattern_var = ctk.StringVar(value="*.*")
         ctk.CTkEntry(pattern_frame, textvariable=self.file_pattern_var, fg_color=theme.colors["background"], border_color=theme.colors["comment"]).pack(fill='x')
 
@@ -43,14 +45,17 @@ class UnifierTab(BaseTab):
         ctk.CTkCheckBox(options_frame, text="Procurar em subpastas (recursivamente)", variable=self.recursive_var, font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w')
         
         self.add_source_col_var = ctk.BooleanVar(value=True)
-        ctk.CTkCheckBox(options_frame, text="Adicionar coluna com nome do ficheiro de origem", variable=self.add_source_col_var, font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w', pady=(5,0))
+#4
+        ctk.CTkCheckBox(options_frame, text="Adicionar coluna com nome do arquivo de origem", variable=self.add_source_col_var, font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w', pady=(5,0))
 
         header_frame = ctk.CTkFrame(config_frame, fg_color="transparent")
         header_frame.pack(fill='x', padx=15, pady=(10, 20))
         ctk.CTkLabel(header_frame, text="Estratégia de união de colunas:", font=theme.fonts["body"]).pack(anchor='w', pady=(0,5))
         self.header_strategy_var = ctk.StringVar(value="union")
-        ctk.CTkRadioButton(header_frame, text="União (manter todas as colunas de todos os ficheiros)", variable=self.header_strategy_var, value="union", font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w')
-        ctk.CTkRadioButton(header_frame, text="Interseção (manter apenas colunas presentes em TODOS os ficheiros)", variable=self.header_strategy_var, value="intersection", font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w', pady=(5,0))
+#4
+        ctk.CTkRadioButton(header_frame, text="União (manter todas as colunas de todos os arquivos)", variable=self.header_strategy_var, value="union", font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w')
+#4
+        ctk.CTkRadioButton(header_frame, text="Interseção (manter apenas colunas presentes em TODOS os arquivos)", variable=self.header_strategy_var, value="intersection", font=theme.fonts["body"], border_color=theme.colors["comment"], hover_color=theme.colors["accent"]).pack(anchor='w', pady=(5,0))
         
         action_frame = ctk.CTkFrame(self, fg_color="transparent")
         action_frame.grid(row=2, column=0, sticky="ew", padx=5, pady=15)
@@ -60,7 +65,8 @@ class UnifierTab(BaseTab):
         self.btn_preview = ctk.CTkButton(action_frame, text="Pré-visualizar Unificação", command=self.preview_unification, font=theme.fonts["button"], fg_color="transparent", border_width=2, border_color=theme.colors["comment"])
         self.btn_preview.grid(row=0, column=0, sticky='ew', padx=(0, 5))
 
-        self.btn_process = ctk.CTkButton(action_frame, text="Unificar e Salvar Ficheiro", command=self.processar, font=theme.fonts["button"], fg_color=theme.colors["green"], text_color=theme.colors["background"], hover_color="#81F9A1")
+#4
+        self.btn_process = ctk.CTkButton(action_frame, text="Unificar e Salvar Arquivo", command=self.processar, font=theme.fonts["button"], fg_color=theme.colors["green"], text_color=theme.colors["background"], hover_color="#81F9A1")
         self.btn_process.grid(row=0, column=1, sticky='ew', padx=(5, 0))
         
         self.progress_bar = ctk.CTkProgressBar(self, orientation='horizontal', progress_color=theme.colors["green"])
@@ -83,6 +89,7 @@ class UnifierTab(BaseTab):
         recursive = self.recursive_var.get()
         search_path = os.path.join(self.folder_path, '**', pattern) if recursive else os.path.join(self.folder_path, pattern)
         files_found = glob.glob(search_path, recursive=recursive)
+#4
         files_found = [f for f in files_found if os.path.isfile(f) and not os.path.basename(f).startswith('UNIFICADO_')]
         return files_found
 
@@ -90,14 +97,18 @@ class UnifierTab(BaseTab):
         files_to_process = self._scan_files()
         if files_to_process is None: return
         if not files_to_process:
-            messagebox.showinfo("Pré-visualização", "Nenhum ficheiro encontrado com os critérios especificados.")
+#4
+            messagebox.showinfo("Pré-visualização", "Nenhum arquivo encontrado com os critérios especificados.")
             return
-        summary = f"Pré-visualização da Unificação:\n\n{len(files_to_process)} ficheiros encontrados.\n\n"
-        summary += "Ficheiros a serem processados (prévia):\n" + "="*40 + "\n"
+#4
+        summary = f"Pré-visualização da Unificação:\n\n{len(files_to_process)} arquivos encontrados.\n\n"
+#4
+        summary += "Arquivos a serem processados (prévia):\n" + "="*40 + "\n"
         for f in files_to_process[:15]:
             summary += os.path.basename(f) + "\n"
         if len(files_to_process) > 15:
-            summary += f"... e mais {len(files_to_process) - 15} ficheiro(s).\n"
+#4
+            summary += f"... e mais {len(files_to_process) - 15} arquivo(s).\n"
         messagebox.showinfo("Pré-visualização da Unificação", summary)
         self.app.log("Pré-visualização gerada com sucesso.")
 
@@ -105,32 +116,39 @@ class UnifierTab(BaseTab):
         files_to_process = self._scan_files()
         if files_to_process is None: return
         if not files_to_process:
-            messagebox.showerror("Erro", "Nenhum ficheiro correspondente encontrado para unificar.")
+#4
+            messagebox.showerror("Erro", "Nenhum arquivo correspondente encontrado para unificar.")
             return
         all_dfs = []
         num_files = len(files_to_process)
         self.progress_bar.set(0)
-        self.app.log(f"Iniciando unificação de {num_files} ficheiros...")
+#4
+        self.app.log(f"Iniciando unificação de {num_files} arquivos...")
         try:
             for i, f in enumerate(files_to_process):
                 self.app.log(f" -> Lendo {os.path.basename(f)} ({i+1}/{num_files})...")
                 try:
                     df = self.carregar_dataframe(f)
                     if df is None:
-                        self.app.log(f"      - Aviso: Falha ao ler o ficheiro: {os.path.basename(f)}")
+#4
+                        self.app.log(f"      - Aviso: Falha ao ler o arquivo: {os.path.basename(f)}")
                         continue
                     if self.add_source_col_var.get():
-                        df['ficheiro_origem'] = os.path.basename(f)
+#4
+                        df['arquivo_origem'] = os.path.basename(f)
                     all_dfs.append(df)
                 except Exception as e:
-                    self.app.log(f"      - ERRO ao processar o ficheiro {os.path.basename(f)}: {e}")
+#4
+                    self.app.log(f"      - ERRO ao processar o arquivo {os.path.basename(f)}: {e}")
                 self.progress_bar.set((i + 1) / num_files)
                 self.app.update_idletasks()
             if not all_dfs:
-                messagebox.showerror("Erro", "Nenhum ficheiro pôde ser lido com sucesso.")
+#4
+                messagebox.showerror("Erro", "Nenhum arquivo pôde ser lido com sucesso.")
                 self.progress_bar.set(0)
                 return
-            self.app.log("Concatenando todos os ficheiros...")
+#4
+            self.app.log("Concatenando todos os arquivos...")
             join_strategy = 'outer' if self.header_strategy_var.get() == "union" else 'inner'
             final_df = pd.concat(all_dfs, ignore_index=True, sort=False, join=join_strategy)
             self.app.log(f"Unificação concluída. Dimensões finais: {final_df.shape[0]} linhas, {final_df.shape[1]} colunas.")

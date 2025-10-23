@@ -22,8 +22,10 @@ class VisualizerTab(BaseTab):
         file_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=(0, 15))
         file_frame.columnconfigure(1, weight=1)
         
+#4
         self.btn_select_file = ctk.CTkButton(file_frame, text="Selecionar Arquivo para Visualização...", font=theme.fonts["button"], command=self.handle_file_selection, fg_color=theme.colors["comment"])
         self.btn_select_file.grid(row=0, column=0, padx=15, pady=15)
+#4
         self.lbl_filepath = ctk.CTkLabel(file_frame, text="Nenhum arquivo selecionado.", font=theme.fonts["body"], text_color=theme.colors["comment"])
         self.lbl_filepath.grid(row=0, column=1, padx=15, pady=15, sticky="w")
 
@@ -68,7 +70,8 @@ class VisualizerTab(BaseTab):
             self.df = self.carregar_dataframe(self.filepath)
             if self.df is not None:
                 self.chart_type_combo.configure(state='readonly')
-                self.app.log("Ficheiro carregado. Selecione um tipo de gráfico.")
+#4
+                self.app.log("Arquivo carregado. Selecione um tipo de gráfico.")
 
     def on_chart_type_change(self, choice):
         for widget in self.dynamic_options_frame.winfo_children():
@@ -158,12 +161,15 @@ class VisualizerTab(BaseTab):
         filepath = filedialog.asksaveasfilename(
             title="Salvar Gráfico",
             defaultextension=".png",
+#4
             filetypes=[("PNG Image", "*.png"), ("JPEG Image", "*.jpg"), ("All files", "*.*")],
         )
         if filepath:
             try:
                 self.fig.savefig(filepath, facecolor=self.fig.get_facecolor(), dpi=150)
+#4
                 messagebox.showinfo("Sucesso", f"Gráfico salvo com sucesso em:\n{filepath}")
+#4
                 self.app.log(f"Gráfico salvo em {filepath}")
             except Exception as e:
                 messagebox.showerror("Erro ao Salvar", f"Não foi possível salvar o gráfico:\n{e}")

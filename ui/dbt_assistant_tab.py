@@ -36,8 +36,10 @@ class DBTAssistantTab(BaseTab):
         self.models_combo = ctk.CTkComboBox(controls_frame, variable=self.models_path_var, state='readonly', button_color=theme.colors["comment"], fg_color=theme.colors["background"], border_color=theme.colors["comment"])
         self.models_combo.pack(fill='x', expand=True, padx=15, pady=(5,10))
 
-        ctk.CTkLabel(controls_frame, text="Ficheiro schema.yml Principal:", font=theme.fonts["body"]).pack(anchor='w', padx=15)
+#4
+        ctk.CTkLabel(controls_frame, text="Arquivo schema.yml Principal:", font=theme.fonts["body"]).pack(anchor='w', padx=15)
         self.schema_path_var = ctk.StringVar()
+#4
         ctk.CTkButton(controls_frame, text="Selecionar schema.yml...", font=theme.fonts["button"], command=self.select_schema_path, fg_color=theme.colors["comment"]).pack(fill='x', padx=15, pady=5)
         EntryWithContextMenu(controls_frame, textvariable=self.schema_path_var, state='readonly', fg_color=theme.colors["background"], border_color=theme.colors["comment"]).pack(fill='x', expand=True, padx=15, pady=(0,15))
 
@@ -58,7 +60,8 @@ class DBTAssistantTab(BaseTab):
         sql_frame = ctk.CTkFrame(main_panel_frame, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
         sql_frame.grid(row=0, column=0, sticky='ew')
         ctk.CTkLabel(sql_frame, text="Etapa 2: Preparação das Consultas", font=theme.fonts["h1"]).pack(anchor='w', padx=15, pady=(15,10))
-        ctk.CTkButton(sql_frame, text="Selecionar Ficheiros SQL...", font=theme.fonts["button"], command=self.select_sql_files, fg_color=theme.colors["comment"]).pack(fill='x', padx=15, pady=(0,15))
+#4
+        ctk.CTkButton(sql_frame, text="Selecionar Arquivos SQL...", font=theme.fonts["button"], command=self.select_sql_files, fg_color=theme.colors["comment"]).pack(fill='x', padx=15, pady=(0,15))
 
         edit_frame = ctk.CTkFrame(main_panel_frame, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
         edit_frame.grid(row=1, column=0, sticky='nsew', pady=15)
@@ -83,7 +86,8 @@ class DBTAssistantTab(BaseTab):
         commit_frame = ctk.CTkFrame(main_panel_frame, corner_radius=theme.CORNER_RADIUS, fg_color=theme.colors["sidebar"])
         commit_frame.grid(row=2, column=0, sticky='ew')
         ctk.CTkLabel(commit_frame, text="Etapa 4: Versionar e Preparar Commit", font=theme.fonts["h1"]).pack(anchor='w', padx=15, pady=(15,10))
-        self.btn_version_files = ctk.CTkButton(commit_frame, text="Versionar Ficheiros", command=self.version_files, font=theme.fonts["button"], state='disabled', fg_color=theme.colors["green"], text_color="#000000", hover_color="#81F9A1")
+#4
+        self.btn_version_files = ctk.CTkButton(commit_frame, text="Versionar Arquivos", command=self.version_files, font=theme.fonts["button"], state='disabled', fg_color=theme.colors["green"], text_color="#000000", hover_color="#81F9A1")
         self.btn_version_files.pack(fill='x', padx=15, pady=(0,10))
         self.final_git_commands_text = TextboxWithContextMenu(commit_frame, height=60, font=theme.fonts["code"], wrap='word', fg_color=theme.colors["background"], border_color=theme.colors["comment"], border_width=1)
         self.final_git_commands_text.pack(fill='x', expand=True, padx=15, pady=(0,15))
@@ -119,13 +123,15 @@ class DBTAssistantTab(BaseTab):
     def select_schema_path(self):
         initial_dir = self.repo_path_var.get() or os.path.expanduser("~")
         schema_path = filedialog.askopenfilename(
-            title="Selecione o ficheiro schema.yml principal",
+#4
+            title="Selecione o arquivo schema.yml principal",
             filetypes=[("YAML files", "*.yml")],
             initialdir=initial_dir
         )
         if schema_path:
             self.schema_path_var.set(schema_path)
-            self.app.log(f"Ficheiro schema.yml selecionado: {schema_path}")
+#4
+            self.app.log(f"Arquivo schema.yml selecionado: {schema_path}")
 
     def update_git_commands(self, *args):
         feature_name = self.feature_name_var.get()
@@ -140,13 +146,15 @@ class DBTAssistantTab(BaseTab):
 
     def select_sql_files(self):
         initial_dir = self.app.config_manager.get("default_import_path") or os.path.expanduser("~")
+#4
         files = filedialog.askopenfilenames(title="Selecione as suas consultas SQL", filetypes=[("SQL files", "*.sql")], initialdir=initial_dir)
         if files:
             self.sql_listbox.delete(0, ctk.END)
             self.sql_files_map = {os.path.basename(f): f for f in files}
             for basename in self.sql_files_map.keys():
                 self.sql_listbox.insert(ctk.END, basename)
-            self.app.log(f"{len(files)} ficheiros SQL selecionados.")
+#4
+            self.app.log(f"{len(files)} arquivos SQL selecionados.")
 
     def on_sql_file_select(self, event):
         selection_indices = self.sql_listbox.curselection()
@@ -163,7 +171,8 @@ class DBTAssistantTab(BaseTab):
                 self.sql_editor_text.insert('1.0', content)
                 self.btn_generate_doc.configure(state='normal')
             except Exception as e:
-                messagebox.showerror("Erro", f"Não foi possível ler o ficheiro:\n{e}")
+#4
+                messagebox.showerror("Erro", f"Não foi possível ler o arquivo:\n{e}")
 
     def start_documentation_generation(self):
         self.btn_generate_doc.configure(state='disabled')
@@ -229,7 +238,8 @@ class DBTAssistantTab(BaseTab):
     
     def format_as_yml(self, doc_data):
         selection_indices = self.sql_listbox.curselection()
-        if not selection_indices: return "# Selecione um ficheiro SQL"
+#4
+        if not selection_indices: return "# Selecione um arquivo SQL"
         
         base_name = os.path.basename(self.sql_listbox.get(selection_indices[0]))
         model_name = f"painel_{os.path.splitext(base_name)[0]}"
@@ -249,7 +259,8 @@ class DBTAssistantTab(BaseTab):
         yml_content_to_append = self.yml_editor_text.get('1.0', ctk.END)
 
         if not all([self.repo_path_var.get(), self.models_path_var.get(), schema_path, self.sql_files_map, yml_content_to_append.strip()]):
-            messagebox.showerror("Erro", "Verifique se todas as configurações, ficheiros SQL e documentação estão preenchidos.")
+#4
+            messagebox.showerror("Erro", "Verifique se todas as configurações, arquivos SQL e documentação estão preenchidos.")
             return
 
         try:
@@ -261,7 +272,8 @@ class DBTAssistantTab(BaseTab):
 
                 with open(dest_path, 'w', encoding='utf-8') as f_write:
                     f_write.write(content)
-                self.app.log(f"Ficheiro salvo em {dest_path}")
+#4
+                self.app.log(f"Arquivo salvo em {dest_path}")
             
             with open(schema_path, 'r', encoding='utf-8') as f:
                 schema_data = yaml.safe_load(f) or {}
@@ -278,7 +290,8 @@ class DBTAssistantTab(BaseTab):
                 yaml.dump(schema_data, f, allow_unicode=True, sort_keys=False, indent=2)
 
             self.app.log(f"Schema.yml ({schema_path}) atualizado com sucesso.")
-            messagebox.showinfo("Sucesso", "Ficheiros versionados e schema atualizado!\nPode agora fazer o commit.")
+#4
+            messagebox.showinfo("Sucesso", "Arquivos versionados e schema atualizado!\nPode agora fazer o commit.")
 
         except Exception as e:
             messagebox.showerror("Erro no Versionamento", f"Ocorreu um erro: {e}")

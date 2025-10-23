@@ -19,14 +19,17 @@ class GeolocalizadorTab(BaseTab):
         self.columnconfigure(0, weight=1)
         self.rowconfigure([0, 1, 2, 3, 4, 5], weight=1)
 
+#4
         # Frame de arquivo
         file_frame = ctk.CTkFrame(self, fg_color=theme.colors["sidebar"])
         file_frame.grid(row=0, column=0, sticky="ew", padx=theme.padding["frame"], pady=theme.padding["frame"])
         file_frame.columnconfigure(1, weight=1)
 
+#4
         self.btn_select_file = ctk.CTkButton(file_frame, text="Selecionar Arquivo...", font=theme.fonts["button"], 
                                             command=self.handle_file_selection, fg_color=theme.colors["comment"])
         self.btn_select_file.grid(row=0, column=0, padx=theme.padding["widget_x"], pady=theme.padding["widget_y"])
+#4
         self.lbl_filepath = ctk.CTkLabel(file_frame, text="Nenhum arquivo selecionado.", font=theme.fonts["body"], 
                                          text_color=theme.colors["white"] if not self.filepath else theme.colors["comment"])
         self.lbl_filepath.grid(row=0, column=1, padx=theme.padding["widget_x"], pady=theme.padding["widget_y"], sticky="w")
@@ -117,6 +120,7 @@ class GeolocalizadorTab(BaseTab):
 
     def enrich_data(self):
         if self.user_df is None or not self.column_combo.get():
+#4
             messagebox.showwarning("Aviso", "Selecione um arquivo e uma coluna primeiro.")
             return
 
@@ -145,7 +149,9 @@ class GeolocalizadorTab(BaseTab):
         output_path = filedialog.asksaveasfilename(
             title="Salvar Resultado",
             defaultextension=".csv",
+#4
             filetypes=[("Planilhas Excel e CSV", "*.xlsx *.xls *.csv"), ("Todos os arquivos", "*.*")],
+#4
             initialfile=f"enriched_{os.path.splitext(os.path.basename(self.filepath))[0]}"
         )
         if output_path:
@@ -154,8 +160,11 @@ class GeolocalizadorTab(BaseTab):
                     self.result_df.to_csv(output_path, index=False)
                 else:
                     self.result_df.to_excel(output_path, index=False)
+#4
                 messagebox.showinfo("Sucesso", f"Arquivo salvo em: {output_path}")
+#4
                 self.app.log(f"Resultado salvo em {output_path}")
             except Exception as e:
+#4
                 messagebox.showerror("Erro", f"Falha ao salvar arquivo: {e}")
                 self.app.log(f"ERRO: {e}")

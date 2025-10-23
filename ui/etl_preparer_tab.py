@@ -30,8 +30,10 @@ class ETLPreparerTab(BaseTab):
         
         ctk.CTkLabel(controls_frame, text="Controles", font=theme.fonts["h1"]).pack(anchor='w', padx=15, pady=(15,10))
         
+#4
         self.btn_select_file = ctk.CTkButton(controls_frame, text="Selecionar Arquivo...", font=theme.fonts["button"], command=self.handle_file_selection, fg_color=theme.colors["comment"])
         self.btn_select_file.pack(fill='x', padx=15, pady=5)
+#4
         self.lbl_filepath = ctk.CTkLabel(controls_frame, text="Nenhum arquivo selecionado.", wraplength=250, font=theme.fonts["body"], text_color=theme.colors["comment"])
         self.lbl_filepath.pack(fill='x', padx=15, pady=(0,10))
 
@@ -52,7 +54,8 @@ class ETLPreparerTab(BaseTab):
         spacer_frame = ctk.CTkFrame(controls_frame, fg_color="transparent")
         spacer_frame.pack(fill='y', expand=True)
 
-        self.status_label = ctk.CTkLabel(controls_frame, text="Aguardando ficheiro...", font=theme.fonts["body"], text_color=theme.colors["comment"])
+#4
+        self.status_label = ctk.CTkLabel(controls_frame, text="Aguardando arquivo...", font=theme.fonts["body"], text_color=theme.colors["comment"])
         self.status_label.pack(fill='x', padx=15, pady=(15,5))
         self.btn_invoke = ctk.CTkButton(controls_frame, text="Analisar Tabela com IA", font=theme.fonts["button"], command=self.start_ai_analysis, state='disabled', fg_color=theme.colors["accent"], text_color=theme.colors["background"], hover_color=theme.colors["pink"])
         self.btn_invoke.pack(fill='x', padx=15, pady=(0,15))
@@ -112,7 +115,8 @@ class ETLPreparerTab(BaseTab):
             if self.df is not None:
                 self.btn_invoke.configure(state='normal')
                 self.status_label.configure(text="Pronto para análise.")
-                self.app.log("Ficheiro carregado. Pode iniciar a análise.")
+#4
+                self.app.log("Arquivo carregado. Pode iniciar a análise.")
                 self.run_purification()
                 self.update_preview_tree(self.processed_df)
 
@@ -143,7 +147,8 @@ class ETLPreparerTab(BaseTab):
                 load_dotenv()
                 api_key = os.getenv("GEMINI_API_KEY")
             if not api_key:
-                messagebox.showerror("Erro de Configuração", "Chave de API do Gemini não encontrada.\n\nPor favor, adicione a chave na aba 'Configurações' ou num ficheiro .env (GEMINI_API_KEY='sua_chave').")
+#4
+                messagebox.showerror("Erro de Configuração", "Chave de API do Gemini não encontrada.\n\nPor favor, adicione a chave na aba 'Configurações' ou num arquivo .env (GEMINI_API_KEY='sua_chave').")
                 self.status_label.configure(text="Erro: Chave de API não encontrada.")
                 return
             genai.configure(api_key=api_key)
@@ -200,6 +205,7 @@ class ETLPreparerTab(BaseTab):
         bq_schema = [{"name": c["name"], "type": c["type"], "description": c["description"], "mode": "NULLABLE"} for c in schema_data.get("columns", [])]
         self.bq_schema_text.delete('1.0', ctk.END)
         self.bq_schema_text.insert('1.0', json.dumps(bq_schema, indent=2, ensure_ascii=False))
+#4
         table_name = self.sanitize_column_name(os.path.splitext(os.path.basename(self.filepath))[0]) if self.filepath else "nome_da_tabela"
         dbt_yml = f"version: 2\n\nmodels:\n  - name: {table_name}\n"
         dbt_yml += f"    description: \"{schema_data.get('table_description', '')}\"\n"
@@ -234,21 +240,27 @@ class ETLPreparerTab(BaseTab):
         if self.processed_df is None:
             messagebox.showwarning("Aviso", "Nenhum dado processado para salvar.")
             return
+#4
         folder_path = filedialog.askdirectory(title="Selecione a pasta para salvar os artefatos")
         if not folder_path: return
         base_name = self.sanitize_column_name(os.path.splitext(os.path.basename(self.filepath))[0])
         try:
             csv_path = os.path.join(folder_path, f"{base_name}.csv")
             self.processed_df.to_csv(csv_path, index=False, encoding='utf-8-sig')
+#4
             self.app.log(f"CSV tratado salvo em {csv_path}")
             bq_path = os.path.join(folder_path, "schema_bq.json")
             with open(bq_path, 'w', encoding='utf-8') as f:
                 f.write(self.bq_schema_text.get('1.0', ctk.END))
+#4
             self.app.log(f"Schema BigQuery salvo em {bq_path}")
             dbt_path = os.path.join(folder_path, f"{base_name}.yml")
             with open(dbt_path, 'w', encoding='utf-8') as f:
                 f.write(self.dbt_schema_text.get('1.0', ctk.END))
+#4
             self.app.log(f"Schema dbt salvo em {dbt_path}")
+#4
             messagebox.showinfo("Sucesso", f"Todos os artefatos foram salvos com sucesso na pasta:\n{folder_path}")
         except Exception as e:
-            messagebox.showerror("Erro ao Salvar", f"Não foi possível salvar os ficheiros:\n{e}")
+#4
+            messagebox.showerror("Erro ao Salvar", f"Não foi possível salvar os arquivos:\n{e}")
