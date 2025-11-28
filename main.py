@@ -1,14 +1,16 @@
-from data_toolkit import DataToolkitApp
 import os
+import sys
+
+# Add the project root to sys.path
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
+from src.ui.app import DataToolkitApp
 
 if __name__ == "__main__":
-    # Garante que o diretório de trabalho seja o do script
-    # para que os caminhos relativos (como para 'assets') funcionem
+    # Ensure working directory is correct
     abspath = os.path.abspath(__file__)
     dname = os.path.dirname(abspath)
     os.chdir(dname)
 
     app = DataToolkitApp()
-    app.run() # O comando correto, dirigido ao maestro.
-
-
+    app.mainloop()
